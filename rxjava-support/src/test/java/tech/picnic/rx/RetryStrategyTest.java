@@ -12,111 +12,106 @@ import org.testng.annotations.Test;
 
 @Test
 public final class RetryStrategyTest {
-    public void testOnlyIf() throws Exception {
-        errorSource(2)
-                .retryWhen(
-                        RetryStrategy.onlyIf(
-                                e ->
-                                        e instanceof RuntimeException
-                                                && "Error #1".equals(e.getMessage())))
-                .test()
-                .await()
-                .assertError(RuntimeException.class)
-                .assertErrorMessage("Error #2");
-        errorSource(1)
-                .retryWhen(RetryStrategy.onlyIf(e -> e instanceof Error))
-                .test()
-                .await()
-                .assertError(RuntimeException.class)
-                .assertErrorMessage("Error #1");
-    }
+  public void testOnlyIf() throws Exception {
+    errorSource(2)
+        .retryWhen(
+            RetryStrategy.onlyIf(
+                e -> e instanceof RuntimeException && "Error #1".equals(e.getMessage())))
+        .test()
+        .await()
+        .assertError(RuntimeException.class)
+        .assertErrorMessage("Error #2");
+    errorSource(1)
+        .retryWhen(RetryStrategy.onlyIf(e -> e instanceof Error))
+        .test()
+        .await()
+        .assertError(RuntimeException.class)
+        .assertErrorMessage("Error #1");
+  }
 
-    public void testExponentialBackoff() throws Exception {
-        AtomicInteger retries = new AtomicInteger();
-        TestScheduler scheduler = new TestScheduler();
-        TestSubscriber<Integer> test =
-                errorSource(10)
-                        .doOnSubscribe(d -> retries.incrementAndGet())
-                        .retryWhen(
-                                RetryStrategy.always()
-                                        .withBackoffScheduler(scheduler)
-                                        .exponentialBackoff(Duration.ofMillis(100)))
-                        .test();
-        test.assertNotTerminated().assertNoValues();
-        for (int i = 1, d = 100, t = 0; i <= 10; ++i, t += d, d *= 2) {
-            scheduler.advanceTimeTo(t, MILLISECONDS);
-            test.assertNotTerminated().assertNoValues();
-            assertEquals(retries.get(), i);
-            scheduler.advanceTimeBy(d - 1, MILLISECONDS);
-            test.assertNotTerminated().assertNoValues();
-            assertEquals(retries.get(), i);
-        }
-        scheduler.advanceTimeBy(1, MILLISECONDS);
-        test.assertValue(11).assertComplete();
-    }
-
-    public void testFixedBackoff() throws Exception {
-        TestScheduler scheduler = new TestScheduler();
-        TestSubscriber<Integer> test =
-                errorSource(10)
-                        .retryWhen(
-                                RetryStrategy.always()
-                                        .withBackoffScheduler(scheduler)
-                                        .fixedBackoff(Duration.ofMillis(500)))
-                        .test();
-        scheduler.advanceTimeTo(4999, MILLISECONDS);
-        test.assertNotTerminated().assertNoValues();
-        scheduler.advanceTimeTo(5000, MILLISECONDS);
-        test.assertValue(11).assertComplete();
-    }
-
-    public void testCustomBackoff() throws Exception {
-        TestScheduler scheduler = new TestScheduler();
-        TestSubscriber<Integer> test =
-                errorSource(10)
-                        .retryWhen(
-                                RetryStrategy.always()
-                                        .withBackoffScheduler(scheduler)
-                                        .customBackoff(
-                                                Flowable.just(
-                                                        Duration.ofMillis(10),
-                                                        Duration.ofMillis(20))))
-                        .test();
-        scheduler.advanceTimeTo(29, MILLISECONDS);
-        test.assertNotTerminated().assertNoValues();
-        scheduler.advanceTimeTo(30, MILLISECONDS);
-        test.assertError(RuntimeException.class).assertErrorMessage("Error #3");
-    }
-
-    public void testTimes() throws Exception {
+  public void testExponentialBackoff() throws Exception {
+    AtomicInteger retries = new AtomicInteger();
+    TestScheduler scheduler = new TestScheduler();
+    TestSubscriber<Integer> test =
         errorSource(10)
-                .retryWhen(RetryStrategy.always().times(5))
-                .test()
-                .await()
-                .assertError(RuntimeException.class)
-                .assertErrorMessage("Error #6");
+            .doOnSubscribe(d -> retries.incrementAndGet())
+            .retryWhen(
+                RetryStrategy.always()
+                    .withBackoffScheduler(scheduler)
+                    .exponentialBackoff(Duration.ofMillis(100)))
+            .test();
+    test.assertNotTerminated().assertNoValues();
+    for (int i = 1, d = 100, t = 0; i <= 10; ++i, t += d, d *= 2) {
+      scheduler.advanceTimeTo(t, MILLISECONDS);
+      test.assertNotTerminated().assertNoValues();
+      assertEquals(retries.get(), i);
+      scheduler.advanceTimeBy(d - 1, MILLISECONDS);
+      test.assertNotTerminated().assertNoValues();
+      assertEquals(retries.get(), i);
+    }
+    scheduler.advanceTimeBy(1, MILLISECONDS);
+    test.assertValue(11).assertComplete();
+  }
+
+  public void testFixedBackoff() throws Exception {
+    TestScheduler scheduler = new TestScheduler();
+    TestSubscriber<Integer> test =
         errorSource(10)
-                .retryWhen(RetryStrategy.always().times(10))
-                .test()
-                .await()
-                .assertValue(11)
-                .assertComplete();
-    }
-    /**
-     * Returns a {@link Flowable} which yields either an error or an integer when subscribed to.
-     *
-     * @param errors the number of initial subscriptions for which an error should be thrown
-     * @return the described {@link Flowable}
-     */
-    private static Flowable<Integer> errorSource(int errors) {
-        AtomicInteger count = new AtomicInteger();
-        return Flowable.fromCallable(count::incrementAndGet)
-                .map(
-                        i -> {
-                            if (i <= errors) {
-                                throw new RuntimeException("Error #" + i);
-                            }
-                            return i;
-                        });
-    }
+            .retryWhen(
+                RetryStrategy.always()
+                    .withBackoffScheduler(scheduler)
+                    .fixedBackoff(Duration.ofMillis(500)))
+            .test();
+    scheduler.advanceTimeTo(4999, MILLISECONDS);
+    test.assertNotTerminated().assertNoValues();
+    scheduler.advanceTimeTo(5000, MILLISECONDS);
+    test.assertValue(11).assertComplete();
+  }
+
+  public void testCustomBackoff() throws Exception {
+    TestScheduler scheduler = new TestScheduler();
+    TestSubscriber<Integer> test =
+        errorSource(10)
+            .retryWhen(
+                RetryStrategy.always()
+                    .withBackoffScheduler(scheduler)
+                    .customBackoff(Flowable.just(Duration.ofMillis(10), Duration.ofMillis(20))))
+            .test();
+    scheduler.advanceTimeTo(29, MILLISECONDS);
+    test.assertNotTerminated().assertNoValues();
+    scheduler.advanceTimeTo(30, MILLISECONDS);
+    test.assertError(RuntimeException.class).assertErrorMessage("Error #3");
+  }
+
+  public void testTimes() throws Exception {
+    errorSource(10)
+        .retryWhen(RetryStrategy.always().times(5))
+        .test()
+        .await()
+        .assertError(RuntimeException.class)
+        .assertErrorMessage("Error #6");
+    errorSource(10)
+        .retryWhen(RetryStrategy.always().times(10))
+        .test()
+        .await()
+        .assertValue(11)
+        .assertComplete();
+  }
+  /**
+   * Returns a {@link Flowable} which yields either an error or an integer when subscribed to.
+   *
+   * @param errors the number of initial subscriptions for which an error should be thrown
+   * @return the described {@link Flowable}
+   */
+  private static Flowable<Integer> errorSource(int errors) {
+    AtomicInteger count = new AtomicInteger();
+    return Flowable.fromCallable(count::incrementAndGet)
+        .map(
+            i -> {
+              if (i <= errors) {
+                throw new RuntimeException("Error #" + i);
+              }
+              return i;
+            });
+  }
 }
