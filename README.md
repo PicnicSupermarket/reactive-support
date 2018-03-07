@@ -1,6 +1,6 @@
 # Picnic Reactive Support
 
-[![Build Status][travis-img]][travis]
+[![Build Status][travisci-badge]][travisci-builds]
 
 A collection of Reactive Programming (RxJava and Reactor) utilities forged and
 implemented in the Picnic backend.
@@ -145,8 +145,8 @@ and style in order to keep the code as readable as possible.
 
 [flowable-retrywhen]: http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html#retryWhen-io.reactivex.functions.Function-
 [jitpack]: https://jitpack.io
-[travis]: https://travis-ci.org/PicnicSupermarket/reactive-support
-[travis-img]: https://travis-ci.org/PicnicSupermarket/reactive-support.svg?branch=master
 [new-issue]: https://github.com/PicnicSupermarket/reactive-support/issues/new
 [new-pr]: https://github.com/PicnicSupermarket/reactive-support/compare
 [scheduler]: http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Scheduler.html
+[travisci-badge]: https://travis-ci.org/PicnicSupermarket/reactive-support.svg?branch=master
+[travisci-builds]: https://travis-ci.org/PicnicSupermarket/reactive-support
