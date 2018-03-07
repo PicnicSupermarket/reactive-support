@@ -48,11 +48,13 @@
         <version.javac>9+181-r4173-1</version.javac>
         <version.javadoc>2.10.4</version.javadoc>
         <version.jdk>1.8</version.jdk>
-        <version.maven>3.5.0</version.maven>
+        <!-- XXX: We'd like to force usage of the latest Maven release, but
+        JitPack uses Mavem 3.2.5. Revisit this once we deploy to Maven Central. -->
+        <version.maven>3.2.5</version.maven>
         <version.nullaway>0.3.5</version.nullaway>
         <version.plexus-compiler>2.8.3</version.plexus-compiler>
         <version.slf4j>1.7.25</version.slf4j>
-        <version.surefire>2.20.1</version.surefire>
+        <version.surefire>2.21.0</version.surefire>
         <!-- Our build system (Travis CI) provides a monotonically increasing
         build number. When building locally, this number is obviously absent.
         So we provide a default value. -->
@@ -354,6 +356,7 @@
                                         <property name="illegalClasses" value="org.springframework.context.annotation.ComponentScan" />
                                         <property name="illegalPkgs" value="com.amazonaws.annotation" />
                                         <property name="illegalPkgs" value="com.beust.jcommander.internal" />
+                                        <property name="illegalPkgs" value="com.google.api.client.repackaged" />
                                         <property name="illegalPkgs" value="com.newrelic.agent.deps" />
                                         <property name="illegalPkgs" value="jdk" />
                                         <property name="illegalPkgs" value="jersey.repackaged" />
@@ -362,6 +365,7 @@
                                             <!-- Please use Guava or a custom
                                             helper method instead. -->
                                         </property>
+                                        <property name="illegalPkgs" value="org.immutables.value.internal" />
                                         <property name="illegalPkgs" value="org.mutabilitydetector.internal" />
                                     </module>
                                     <module name="IllegalImport">
