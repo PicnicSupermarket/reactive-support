@@ -52,7 +52,7 @@
         <version.nullaway>0.3.5</version.nullaway>
         <version.plexus-compiler>2.8.3</version.plexus-compiler>
         <version.slf4j>1.7.25</version.slf4j>
-        <version.surefire>2.20.1</version.surefire>
+        <version.surefire>2.21.0</version.surefire>
         <!-- Our build system (Travis CI) provides a monotonically increasing
         build number. When building locally, this number is obviously absent.
         So we provide a default value. -->
@@ -354,6 +354,7 @@
                                         <property name="illegalClasses" value="org.springframework.context.annotation.ComponentScan" />
                                         <property name="illegalPkgs" value="com.amazonaws.annotation" />
                                         <property name="illegalPkgs" value="com.beust.jcommander.internal" />
+                                        <property name="illegalPkgs" value="com.google.api.client.repackaged" />
                                         <property name="illegalPkgs" value="com.newrelic.agent.deps" />
                                         <property name="illegalPkgs" value="jdk" />
                                         <property name="illegalPkgs" value="jersey.repackaged" />
@@ -362,6 +363,7 @@
                                             <!-- Please use Guava or a custom
                                             helper method instead. -->
                                         </property>
+                                        <property name="illegalPkgs" value="org.immutables.value.internal" />
                                         <property name="illegalPkgs" value="org.mutabilitydetector.internal" />
                                     </module>
                                     <module name="IllegalImport">
