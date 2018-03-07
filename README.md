@@ -1,13 +1,14 @@
 # Picnic Reactive Support
 
+[![Build Status](https://travis-ci.org/PicnicSupermarket/reactive-support.svg?branch=master)](https://travis-ci.org/PicnicSupermarket/reactive-support)
+
 A collection of Reactive Programming (RxJava and Reactor) utilities forged and
 implemented in the Picnic backend.
 
 ## How to Install
 
-### Gradle
-
 Using [JitPack][jitpack]:
+### Gradle
 
 ```groovy
 dependencies {
