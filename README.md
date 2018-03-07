@@ -13,7 +13,7 @@ Using [JitPack][jitpack]:
 
 ```groovy
 dependencies {
-    compile 'com.github.PicnicSupermarket:reactive-support:master-SNAPSHOT'
+    compile 'com.github.PicnicSupermarket.reactive-support:rxjava-support:master-SNAPSHOT'
 }
 ```
 
@@ -21,8 +21,8 @@ dependencies {
 
 ```xml
 <dependency>
-    <groupId>com.github.PicnicSupermarket</groupId>
-    <artifactId>reactive-support</artifactId>
+    <groupId>com.github.PicnicSupermarket.reactive-support</groupId>
+    <artifactId>rxjava-support</artifactId>
     <version>master-SNAPSHOT</version>
 </dependency>
 ```
