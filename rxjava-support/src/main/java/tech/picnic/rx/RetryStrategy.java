@@ -27,7 +27,8 @@ import org.slf4j.LoggerFactory;
  *     .retryWhen(
  *          RetryStrategy.ifInstanceOf(TooManyRequestsException.class)
  *              .withBackoffScheduler(scheduler)
- *              .exponentialBackoff(500, MILLISECONDS))
+ *              .exponentialBackoff(500, MILLISECONDS)
+ *              .build())
  * }</pre>
  */
 public final class RetryStrategy implements Function<Flowable<Throwable>, Flowable<?>> {
