@@ -1,6 +1,7 @@
 package tech.picnic.rx;
 
 import io.reactivex.Scheduler;
+import io.reactivex.functions.Function;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -11,7 +12,7 @@ import java.util.function.Supplier;
  * @param <T> the type of the to-be propagated object
  * @see PicnicRxPlugins#configureContextPropagation
  */
-public final class RxThreadLocal<T> implements io.reactivex.functions.Function<Runnable, Runnable> {
+public final class RxThreadLocal<T> implements Function<Runnable, Runnable> {
   private final Supplier<T> extractor;
   private final Consumer<T> configurer;
   private final Consumer<T> restorer;

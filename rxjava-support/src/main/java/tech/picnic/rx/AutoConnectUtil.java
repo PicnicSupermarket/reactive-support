@@ -3,22 +3,16 @@ package tech.picnic.rx;
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
-import io.reactivex.Observer;
 import io.reactivex.Single;
 import java.util.concurrent.Callable;
 
 /**
- * A custom {@link Observable} that reduces {@link Observable#replay() replay()}.{@link
+ * A factory that reduces sources to {@link Observable#replay() replay()}.{@link
  * io.reactivex.observables.ConnectableObservable#autoConnect() autoConnect()} boilerplate.
- *
- * @param <T> The type of the items emitted by this observable
  */
-public final class AutoConnectedObservable<T> extends Observable<T> {
-  private final Observable<T> source;
+public final class AutoConnectUtil {
 
-  private AutoConnectedObservable(Observable<T> source) {
-    this.source = source.compose(upstream -> upstream.replay().autoConnect());
-  }
+  AutoConnectUtil() {}
 
   /**
    * Transforms an Observable into an auto-connected replay Observable.
@@ -28,18 +22,18 @@ public final class AutoConnectedObservable<T> extends Observable<T> {
    * @return an auto-connected replay Observable
    */
   public static <T> Observable<T> fromObservable(Observable<T> source) {
-    return new AutoConnectedObservable<>(source);
+    return autoConnect(source);
   }
 
   /**
-   * Transforms a Flowable into an auto-connected replay Observable.
+   * Transforms a Flowable into an auto-connected replay Flowable.
    *
    * @param <T> the Flowable emission type
    * @param source the source Flowable
-   * @return an auto-connected replay Observable
+   * @return an auto-connected replay Flowable
    */
-  public static <T> Observable<T> fromFlowable(Flowable<T> source) {
-    return new AutoConnectedObservable<>(source.toObservable());
+  public static <T> Flowable<T> fromFlowable(Flowable<T> source) {
+    return autoConnect(source);
   }
 
   /**
@@ -50,7 +44,7 @@ public final class AutoConnectedObservable<T> extends Observable<T> {
    * @return an auto-connected replay Observable
    */
   public static <T> Observable<T> fromSingle(Single<T> source) {
-    return new AutoConnectedObservable<>(source.toObservable());
+    return autoConnect(source.toObservable());
   }
 
   /**
@@ -61,7 +55,7 @@ public final class AutoConnectedObservable<T> extends Observable<T> {
    * @return an auto-connected replay Observable
    */
   public static <T> Observable<T> fromMaybe(Maybe<T> source) {
-    return new AutoConnectedObservable<>(source.toObservable());
+    return autoConnect(source.toObservable());
   }
 
   /**
@@ -71,8 +65,8 @@ public final class AutoConnectedObservable<T> extends Observable<T> {
    * @param source the source Callable
    * @return an auto-connected replay Observable
    */
-  public static <T> AutoConnectedObservable<T> fromCallable(Callable<? extends T> source) {
-    return new AutoConnectedObservable<>(Observable.fromCallable(source));
+  public static <T> Observable<T> fromCallable(Callable<? extends T> source) {
+    return autoConnect(Observable.fromCallable(source));
   }
 
   /**
@@ -83,11 +77,14 @@ public final class AutoConnectedObservable<T> extends Observable<T> {
    * @return an auto-connected replay Observable
    */
   public static <T> Observable<T> just(T item) {
-    return new AutoConnectedObservable<>(Observable.just(item));
+    return autoConnect(Observable.just(item));
   }
 
-  @Override
-  protected void subscribeActual(Observer<? super T> observer) {
-    source.subscribe(observer);
+  private static <T> Observable<T> autoConnect(Observable<T> source) {
+    return source.replay().autoConnect();
+  }
+
+  private static <T> Flowable<T> autoConnect(Flowable<T> source) {
+    return source.replay().autoConnect();
   }
 }

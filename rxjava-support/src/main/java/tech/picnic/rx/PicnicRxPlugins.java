@@ -2,10 +2,10 @@ package tech.picnic.rx;
 
 import static java.util.Arrays.asList;
 
+import com.google.errorprone.annotations.Var;
 import io.reactivex.functions.Function;
 import io.reactivex.plugins.RxJavaPlugins;
 import java.util.Collection;
-import java.util.stream.Stream;
 
 /** Utility class for configuring global RxJava functionality. */
 public final class PicnicRxPlugins {
@@ -46,13 +46,13 @@ public final class PicnicRxPlugins {
 
   private static Function<Runnable, Runnable> compose(
       Collection<? extends Function<? super Runnable, ? extends Runnable>> functions) {
-    @SuppressWarnings("unchecked")
-    Stream<Function<Runnable, Runnable>> stream =
-        (Stream<Function<Runnable, Runnable>>) functions.stream();
-    return stream
-        .reduce((r1, r2) -> r -> r2.apply(r1.apply(r)))
-        .orElseThrow(
-            () -> new IllegalArgumentException("At least one `RxThreadLocal` must be provided"));
+    return r -> {
+      @Var Runnable runnable = r;
+      for (Function<? super Runnable, ? extends Runnable> f : functions) {
+        runnable = f.apply(runnable);
+      }
+      return runnable;
+    };
   }
 
   /**

@@ -16,13 +16,14 @@ public final class RetryStrategyTest {
     errorSource(2)
         .retryWhen(
             RetryStrategy.onlyIf(
-                e -> e instanceof RuntimeException && "Error #1".equals(e.getMessage())))
+                    e -> e instanceof RuntimeException && "Error #1".equals(e.getMessage()))
+                .build())
         .test()
         .await()
         .assertError(RuntimeException.class)
         .assertErrorMessage("Error #2");
     errorSource(1)
-        .retryWhen(RetryStrategy.onlyIf(e -> e instanceof Error))
+        .retryWhen(RetryStrategy.onlyIf(e -> e instanceof Error).build())
         .test()
         .await()
         .assertError(RuntimeException.class)
@@ -38,7 +39,8 @@ public final class RetryStrategyTest {
             .retryWhen(
                 RetryStrategy.always()
                     .withBackoffScheduler(scheduler)
-                    .exponentialBackoff(Duration.ofMillis(100)))
+                    .exponentialBackoff(Duration.ofMillis(100))
+                    .build())
             .test();
     test.assertNotTerminated().assertNoValues();
     for (int i = 1, d = 100, t = 0; i <= 10; ++i, t += d, d *= 2) {
@@ -60,7 +62,8 @@ public final class RetryStrategyTest {
             .retryWhen(
                 RetryStrategy.always()
                     .withBackoffScheduler(scheduler)
-                    .fixedBackoff(Duration.ofMillis(500)))
+                    .fixedBackoff(Duration.ofMillis(500))
+                    .build())
             .test();
     scheduler.advanceTimeTo(4999, MILLISECONDS);
     test.assertNotTerminated().assertNoValues();
@@ -75,7 +78,8 @@ public final class RetryStrategyTest {
             .retryWhen(
                 RetryStrategy.always()
                     .withBackoffScheduler(scheduler)
-                    .customBackoff(Flowable.just(Duration.ofMillis(10), Duration.ofMillis(20))))
+                    .customBackoff(Flowable.just(Duration.ofMillis(10), Duration.ofMillis(20)))
+                    .build())
             .test();
     scheduler.advanceTimeTo(29, MILLISECONDS);
     test.assertNotTerminated().assertNoValues();
@@ -85,13 +89,13 @@ public final class RetryStrategyTest {
 
   public void testTimes() throws Exception {
     errorSource(10)
-        .retryWhen(RetryStrategy.always().times(5))
+        .retryWhen(RetryStrategy.always().times(5).build())
         .test()
         .await()
         .assertError(RuntimeException.class)
         .assertErrorMessage("Error #6");
     errorSource(10)
-        .retryWhen(RetryStrategy.always().times(10))
+        .retryWhen(RetryStrategy.always().times(10).build())
         .test()
         .await()
         .assertValue(11)
