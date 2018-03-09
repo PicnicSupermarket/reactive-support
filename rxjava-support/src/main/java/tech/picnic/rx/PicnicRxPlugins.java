@@ -2,10 +2,11 @@ package tech.picnic.rx;
 
 import static java.util.Arrays.asList;
 
+import com.google.common.collect.Lists;
 import com.google.errorprone.annotations.Var;
 import io.reactivex.functions.Function;
 import io.reactivex.plugins.RxJavaPlugins;
-import java.util.Collection;
+import java.util.List;
 
 /** Utility class for configuring global RxJava functionality. */
 public final class PicnicRxPlugins {
@@ -40,15 +41,15 @@ public final class PicnicRxPlugins {
    * @param rxThreadLocals the {@link RxThreadLocal} contexts to be propagated
    * @see #configureContextPropagation(RxThreadLocal...)
    */
-  public static void configureContextPropagation(Collection<RxThreadLocal<?>> rxThreadLocals) {
+  public static void configureContextPropagation(List<RxThreadLocal<?>> rxThreadLocals) {
     RxJavaPlugins.setScheduleHandler(compose(rxThreadLocals));
   }
 
   private static Function<Runnable, Runnable> compose(
-      Collection<? extends Function<? super Runnable, ? extends Runnable>> functions) {
+      List<? extends Function<? super Runnable, ? extends Runnable>> functions) {
     return r -> {
       @Var Runnable runnable = r;
-      for (Function<? super Runnable, ? extends Runnable> f : functions) {
+      for (Function<? super Runnable, ? extends Runnable> f : Lists.reverse(functions)) {
         runnable = f.apply(runnable);
       }
       return runnable;
