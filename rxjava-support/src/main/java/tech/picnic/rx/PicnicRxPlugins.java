@@ -48,11 +48,11 @@ public final class PicnicRxPlugins {
   private static Function<Runnable, Runnable> compose(
       List<? extends Function<? super Runnable, ? extends Runnable>> functions) {
     return r -> {
-      @Var Runnable runnable = r;
+      @Var Runnable composition = r;
       for (Function<? super Runnable, ? extends Runnable> f : Lists.reverse(functions)) {
-        runnable = f.apply(runnable);
+        composition = f.apply(composition);
       }
-      return runnable;
+      return composition;
     };
   }
 
