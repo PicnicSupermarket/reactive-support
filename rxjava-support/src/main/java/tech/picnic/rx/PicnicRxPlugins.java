@@ -2,10 +2,11 @@ package tech.picnic.rx;
 
 import static java.util.Arrays.asList;
 
+import com.google.common.collect.Lists;
+import com.google.errorprone.annotations.Var;
 import io.reactivex.functions.Function;
 import io.reactivex.plugins.RxJavaPlugins;
-import java.util.Collection;
-import java.util.stream.Stream;
+import java.util.List;
 
 /** Utility class for configuring global RxJava functionality. */
 public final class PicnicRxPlugins {
@@ -40,19 +41,19 @@ public final class PicnicRxPlugins {
    * @param rxThreadLocals the {@link RxThreadLocal} contexts to be propagated
    * @see #configureContextPropagation(RxThreadLocal...)
    */
-  public static void configureContextPropagation(Collection<RxThreadLocal<?>> rxThreadLocals) {
+  public static void configureContextPropagation(List<RxThreadLocal<?>> rxThreadLocals) {
     RxJavaPlugins.setScheduleHandler(compose(rxThreadLocals));
   }
 
   private static Function<Runnable, Runnable> compose(
-      Collection<? extends Function<? super Runnable, ? extends Runnable>> functions) {
-    @SuppressWarnings("unchecked")
-    Stream<Function<Runnable, Runnable>> stream =
-        (Stream<Function<Runnable, Runnable>>) functions.stream();
-    return stream
-        .reduce((r1, r2) -> r -> r2.apply(r1.apply(r)))
-        .orElseThrow(
-            () -> new IllegalArgumentException("At least one `RxThreadLocal` must be provided"));
+      List<? extends Function<? super Runnable, ? extends Runnable>> functions) {
+    return r -> {
+      @Var Runnable composition = r;
+      for (Function<? super Runnable, ? extends Runnable> f : Lists.reverse(functions)) {
+        composition = f.apply(composition);
+      }
+      return composition;
+    };
   }
 
   /**

@@ -12,28 +12,26 @@ import org.testng.annotations.Test;
 @Test
 public final class AutoConnectedObservableTest {
   public void testObservableAutoConnect() throws InterruptedException {
-    test(
-        src ->
-            AutoConnectedObservable.fromObservable(
-                Observable.defer(() -> Observable.just(src.get()))));
+    test(src -> AutoConnectUtil.fromObservable(Observable.defer(() -> Observable.just(src.get()))));
   }
 
   public void testFlowableAutoConnect() throws InterruptedException {
     test(
         src ->
-            AutoConnectedObservable.fromFlowable(Flowable.defer(() -> Flowable.just(src.get()))));
+            AutoConnectUtil.fromFlowable(Flowable.defer(() -> Flowable.just(src.get())))
+                .toObservable());
   }
 
   public void testMaybeAutoConnect() throws InterruptedException {
-    test(src -> AutoConnectedObservable.fromMaybe(Maybe.defer(() -> Maybe.just(src.get()))));
+    test(src -> AutoConnectUtil.fromMaybe(Maybe.defer(() -> Maybe.just(src.get()))));
   }
 
   public void testSingleAutoConnect() throws InterruptedException {
-    test(src -> AutoConnectedObservable.fromSingle(Single.defer(() -> Single.just(src.get()))));
+    test(src -> AutoConnectUtil.fromSingle(Single.defer(() -> Single.just(src.get()))));
   }
 
   public void testCallableAutoConnect() throws InterruptedException {
-    test(src -> AutoConnectedObservable.fromCallable(src::get));
+    test(src -> AutoConnectUtil.fromCallable(src::get));
   }
 
   private static void test(Function<Supplier<Integer>, Observable<Integer>> observableFactory)

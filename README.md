@@ -88,7 +88,8 @@ someFlowable
     .retryWhen(
          RetryStrategy.ifInstanceOf(TooManyRequestsException.class)
              .withBackoffScheduler(Schedulers.io())
-             .exponentialBackoff(Duration.ofMillis(500))
+             .exponentialBackoff(Duration.ofMillis(500)
+             .build())
 ```
 
 ### `RxSpringUtil`
@@ -123,13 +124,13 @@ public SseEmitter sseEndpoint() {
 
 The following types can help save on some boilerplate code.
 
-#### `AutoConnectedObservable`
+#### `AutoConnectUtil`
 
-This type converts reactive types (`Observables`, `Flowables`), `Callables` and
-`Iterables` etc. into an autoconnected replay `Observable`. For example:
+This util converts reactive types (`Observables`, `Flowables`), `Callables` and
+`Iterables` etc. into an autoconnected replay `Observable`/`Flowable`. For example:
 
 ```java
-Observable<String> dataStream = AutoConnectedObservable.fromObservable(expensiveIoObs);
+Observable<String> dataStream = AutoConnectUtil.fromObservable(expensiveIoObs);
 // Result replayed, i.e. expensive I/O is triggered once and then replayed to all subscribers
 Single<Long> count = dataStream.count();
 Observable<String> mapped = dataStream.map(String::toUpperCase);
