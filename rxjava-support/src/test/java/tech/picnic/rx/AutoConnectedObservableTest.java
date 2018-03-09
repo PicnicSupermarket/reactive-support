@@ -12,10 +12,7 @@ import org.testng.annotations.Test;
 @Test
 public final class AutoConnectedObservableTest {
   public void testObservableAutoConnect() throws InterruptedException {
-    test(
-        src ->
-            AutoConnectUtil.fromObservable(
-                Observable.defer(() -> Observable.just(src.get()))));
+    test(src -> AutoConnectUtil.fromObservable(Observable.defer(() -> Observable.just(src.get()))));
   }
 
   public void testFlowableAutoConnect() throws InterruptedException {
