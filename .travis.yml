@@ -1,14 +1,20 @@
 language: java
 jdk:
   - oraclejdk8
+addons:
+  sonarcloud:
+    organization: picnic-technologies
+    token: "${SONARCLOUD_TOKEN}"
 install:
   - mvn clean install -DskipTests
 script:
-  - mvn jacoco:prepare-agent surefire:test jacoco:report coveralls:report
+  - mvn jacoco:prepare-agent surefire:test jacoco:report coveralls:report sonar:sonar
 cache:
   directories:
     # The local Maven repository in which third party dependencies are stored.
     - ${HOME}/.m2/repository
+    # The SonarQube analysis cache.
+    - ${HOME}/.sonar/cache
 before_cache:
   # Don't cache the artifacts we just generated, for multiple reasons: (1) we
   # shouldn't need them next time around and (2) if we do, that indicates a
