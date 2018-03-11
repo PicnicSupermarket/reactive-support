@@ -38,7 +38,7 @@ public final class RxSpring4Util {
    * @param <T> the emission and response type
    * @return a function converting a Single to a DeferredResult
    */
-  public static <T> Function<? super Single<T>, DeferredResult<T>> singleToDeferredResult() {
+  public static <T> Function<Single<T>, DeferredResult<T>> singleToDeferredResult() {
     return singleToDeferredResult(new DeferredResult<T>());
   }
 
@@ -50,12 +50,12 @@ public final class RxSpring4Util {
    * @param timeout the deferred result's timeout
    * @return a function converting a Single to a DeferredResult
    */
-  public static <T> Function<? super Single<T>, DeferredResult<T>> singleToDeferredResult(
+  public static <T> Function<Single<T>, DeferredResult<T>> singleToDeferredResult(
       Duration timeout) {
     return singleToDeferredResult(new DeferredResult<T>(timeout.toMillis()));
   }
 
-  private static <T> Function<? super Single<T>, DeferredResult<T>> singleToDeferredResult(
+  private static <T> Function<Single<T>, DeferredResult<T>> singleToDeferredResult(
       DeferredResult<T> deferredResult) {
     return single -> {
       deferredResult.onTimeout(
@@ -71,7 +71,7 @@ public final class RxSpring4Util {
    * @param <T> the emission and response type
    * @return function converting a Maybe to a DeferredResult
    */
-  public static <T> Function<? super Maybe<T>, DeferredResult<T>> maybeToDeferredResult() {
+  public static <T> Function<Maybe<T>, DeferredResult<T>> maybeToDeferredResult() {
     return maybeToDeferredResult(new DeferredResult<T>());
   }
 
@@ -83,12 +83,11 @@ public final class RxSpring4Util {
    * @param timeout the deferred result's timeout
    * @return a function converting a Maybe to a DeferredResult
    */
-  public static <T> Function<? super Maybe<T>, DeferredResult<T>> maybeToDeferredResult(
-      Duration timeout) {
+  public static <T> Function<Maybe<T>, DeferredResult<T>> maybeToDeferredResult(Duration timeout) {
     return maybeToDeferredResult(new DeferredResult<T>(timeout.toMillis()));
   }
 
-  private static <T> Function<? super Maybe<T>, DeferredResult<T>> maybeToDeferredResult(
+  private static <T> Function<Maybe<T>, DeferredResult<T>> maybeToDeferredResult(
       DeferredResult<T> deferredResult) {
     return single -> {
       deferredResult.onTimeout(
@@ -111,7 +110,7 @@ public final class RxSpring4Util {
    * @return a function converting an Observable to a DeferredResult
    */
   public static <T, R extends Iterable<T>>
-      Function<? super Observable<T>, DeferredResult<R>> observableToDeferredResult(
+      Function<Observable<T>, DeferredResult<R>> observableToDeferredResult(
           Function<? super List<T>, R> collector) {
     return observableToDeferredResult(collector, new DeferredResult<>());
   }
@@ -127,13 +126,13 @@ public final class RxSpring4Util {
    * @return a function converting an Observable to a DeferredResult
    */
   public static <T, R extends Iterable<T>>
-      Function<? super Observable<T>, DeferredResult<R>> observableToDeferredResult(
+      Function<Observable<T>, DeferredResult<R>> observableToDeferredResult(
           Function<? super List<T>, R> collector, Duration timeout) {
     return observableToDeferredResult(collector, new DeferredResult<>(timeout.toMillis()));
   }
 
   private static <T, R extends Iterable<T>>
-      Function<? super Observable<T>, DeferredResult<R>> observableToDeferredResult(
+      Function<Observable<T>, DeferredResult<R>> observableToDeferredResult(
           Function<? super List<T>, R> collector, DeferredResult<R> deferredResult) {
     return observable -> {
       deferredResult.onTimeout(
@@ -178,7 +177,7 @@ public final class RxSpring4Util {
   }
 
   private static <T, R extends Iterable<T>>
-      Function<? super Publisher<T>, DeferredResult<R>> publisherToDeferredResult(
+      Function<Publisher<T>, DeferredResult<R>> publisherToDeferredResult(
           Function<? super List<T>, R> collector, DeferredResult<R> deferredResult) {
     return publisher -> {
       deferredResult.onTimeout(
@@ -197,7 +196,7 @@ public final class RxSpring4Util {
    *
    * @return a function converting a Completable to a DeferredResult
    */
-  public static Function<? super Completable, DeferredResult<Void>> completableToDeferredResult() {
+  public static Function<Completable, DeferredResult<Void>> completableToDeferredResult() {
     return completableToDeferredResult(new DeferredResult<>());
   }
 
@@ -208,12 +207,12 @@ public final class RxSpring4Util {
    * @param timeout the deferred result's timeout
    * @return a function converting a Completable to a DeferredResult
    */
-  public static Function<? super Completable, DeferredResult<Void>> completableToDeferredResult(
+  public static Function<Completable, DeferredResult<Void>> completableToDeferredResult(
       Duration timeout) {
     return completableToDeferredResult(new DeferredResult<>(timeout.toMillis()));
   }
 
-  private static Function<? super Completable, DeferredResult<Void>> completableToDeferredResult(
+  private static Function<Completable, DeferredResult<Void>> completableToDeferredResult(
       DeferredResult<Void> deferredResult) {
     return completable -> {
       deferredResult.onTimeout(
@@ -230,7 +229,7 @@ public final class RxSpring4Util {
    *
    * @return a function converting an Observable to an SseEmitter
    */
-  public static Function<? super Observable<?>, SseEmitter> observableToSse() {
+  public static Function<Observable<?>, SseEmitter> observableToSse() {
     return observableToSse(null);
   }
 
@@ -242,8 +241,7 @@ public final class RxSpring4Util {
    *     media type
    * @return a function converting an Observable to an SseEmitter
    */
-  public static Function<? super Observable<?>, SseEmitter> observableToSse(
-      @Nullable MediaType mediaType) {
+  public static Function<Observable<?>, SseEmitter> observableToSse(@Nullable MediaType mediaType) {
     return observableToSse(mediaType, new SseEmitter());
   }
 
@@ -256,12 +254,12 @@ public final class RxSpring4Util {
    * @param timeout the SseEmitter's timeout
    * @return a function converting an Observable to an SseEmitter
    */
-  public static Function<? super Observable<?>, SseEmitter> observableToSse(
+  public static Function<Observable<?>, SseEmitter> observableToSse(
       @Nullable MediaType mediaType, Duration timeout) {
     return observableToSse(mediaType, new SseEmitter(timeout.toMillis()));
   }
 
-  private static Function<? super Observable<?>, SseEmitter> observableToSse(
+  private static Function<Observable<?>, SseEmitter> observableToSse(
       @Nullable MediaType mediaType, SseEmitter sseEmitter) {
     return observable ->
         publisherToSse(mediaType, sseEmitter)
@@ -274,7 +272,7 @@ public final class RxSpring4Util {
    *
    * @return a function converting a Publisher to an SseEmitter
    */
-  public static Function<? super Publisher<?>, SseEmitter> publisherToSse() {
+  public static Function<Publisher<?>, SseEmitter> publisherToSse() {
     return publisherToSse((MediaType) null);
   }
 
@@ -339,8 +337,7 @@ public final class RxSpring4Util {
    *     media type
    * @return a function converting a Publisher to an SseEmitter
    */
-  public static Function<? super Publisher<?>, SseEmitter> publisherToSse(
-      @Nullable MediaType mediaType) {
+  public static Function<Publisher<?>, SseEmitter> publisherToSse(@Nullable MediaType mediaType) {
     return publisherToSse(mediaType, new SseEmitter());
   }
 
@@ -351,7 +348,7 @@ public final class RxSpring4Util {
    * @param timeout the SseEmitter's timeout
    * @return a function converting a Publisher to an SseEmitter
    */
-  public static Function<? super Publisher<?>, SseEmitter> publisherToSse(Duration timeout) {
+  public static Function<Publisher<?>, SseEmitter> publisherToSse(Duration timeout) {
     return publisherToSse(null, timeout);
   }
 
@@ -364,12 +361,12 @@ public final class RxSpring4Util {
    * @param timeout the SseEmitter's timeout
    * @return a function converting a Publisher to an SseEmitter
    */
-  public static Function<? super Publisher<?>, SseEmitter> publisherToSse(
+  public static Function<Publisher<?>, SseEmitter> publisherToSse(
       @Nullable MediaType mediaType, Duration timeout) {
     return publisherToSse(mediaType, new SseEmitter(timeout.toMillis()));
   }
 
-  private static Function<? super Publisher<?>, SseEmitter> publisherToSse(
+  private static Function<Publisher<?>, SseEmitter> publisherToSse(
       @Nullable MediaType mediaType, SseEmitter sseEmitter) {
     return publisher -> {
       sseEmitter.onTimeout(
