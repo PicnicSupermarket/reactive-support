@@ -3,6 +3,7 @@
 [![Build Status][travisci-badge]][travisci-builds]
 [![Maven Central][maven-central-badge]][maven-central-browse]
 [![Coverage][coveralls-badge]][coveralls-stats]
+[![BCH compliance][bettercodehub-badge]][bettercodehub]
 
 A collection of Reactive Programming (RxJava and Reactor) utilities forged and
 implemented in the Picnic backend.
@@ -149,6 +150,8 @@ code must be covered by tests. As a rule of thumb, overall test coverage should
 not decrease. (There are exceptions to this rule, e.g. when more code is
 deleted than added.)
 
+[bettercodehub-badge]: https://bettercodehub.com/edge/badge/PicnicSupermarket/reactive-support?branch=master
+[bettercodehub]: https://bettercodehub.com
 [coveralls-badge]: https://coveralls.io/repos/github/PicnicSupermarket/reactive-support/badge.svg?branch=master
 [coveralls-stats]: https://coveralls.io/github/PicnicSupermarket/reactive-support
 [flowable-retrywhen]: http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html#retryWhen-io.reactivex.functions.Function-
