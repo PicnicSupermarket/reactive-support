@@ -7,10 +7,12 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>Picnic Reactive Support</name>
+    <name>Picnic :: Reactive Support</name>
+    <description>Reactive programming support library by Picnic.</description>
+    <url>https://github.com/PicnicSupermarket/reactive-support</url>
     <inceptionYear>2018</inceptionYear>
     <organization>
-        <name>Picnic Technologies</name>
+        <name>Picnic Technologies BV</name>
         <url>http://picnic.tech</url>
     </organization>
     <licenses>
@@ -21,23 +23,54 @@
         </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <name>Philip Leonard</name>
+            <email>philip.leonard@teampicnic.com</email>
+            <organization>Picnic Technologies BV</organization>
+            <timezone>Europe/Amsterdam</timezone>
+        </developer>
+        <developer>
+            <name>Sjoerd Cranen</name>
+            <email>sjoerd.cranen@teampicnic.com</email>
+            <organization>Picnic Technologies BV</organization>
+            <timezone>Europe/Amsterdam</timezone>
+        </developer>
+        <developer>
+            <name>Stephan Schroevers</name>
+            <email>stephan.schroevers@teampicnic.com</email>
+            <organization>Picnic Technologies BV</organization>
+            <timezone>Europe/Amsterdam</timezone>
+        </developer>
+    </developers>
+
     <modules>
         <module>rxjava-support</module>
     </modules>
 
     <scm>
-        <developerConnection>scm:git:git@github.com:PicnicSupermarket/error-prone-contrib.git</developerConnection>
-        <url>https://github.com/PicnicSupermarket/error-prone-contrib</url>
+        <developerConnection>scm:git:git@github.com:PicnicSupermarket/reactive-support.git</developerConnection>
+        <url>https://github.com/PicnicSupermarket/reactive-support</url>
         <tag>HEAD</tag>
     </scm>
     <issueManagement>
         <system>Github</system>
-        <url>https://github.com/PicnicSupermarket/error-prone-contrib/issues</url>
+        <url>https://github.com/PicnicSupermarket/reactive-support/issues</url>
     </issueManagement>
     <ciManagement>
         <system>Travis CI</system>
-        <url>https://travis-ci.com/PicnicSupermarket/error-prone-contrib</url>
+        <url>https://travis-ci.org/PicnicSupermarket/reactive-support</url>
     </ciManagement>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
+    </distributionManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -496,6 +529,19 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>1.6</version>
+                    <executions>
+                        <execution>
+                            <id>sign-artifacts</id>
+                            <goals>
+                                <goal>sign</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
                     <version>2.5.2</version>
                 </plugin>
@@ -529,11 +575,25 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>${version.javadoc}</version>
+                    <executions>
+                        <execution>
+                            <id>generate-javadoc-jar</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
                     <version>2.5.3</version>
+                    <configuration>
+                        <autoVersionSubmodules>true</autoVersionSubmodules>
+                        <releaseProfiles>release</releaseProfiles>
+                        <useReleaseProfile>false</useReleaseProfile>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -885,6 +945,26 @@
                         </plugin>
                     </plugins>
                 </pluginManagement>
+            </build>
+        </profile>
+        <profile>
+            <!-- This profile is auto-activated when performing a release. -->
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                    </plugin>
+                    <!-- Lexicographically this plugin is listed out-of-order
+                    because it must be executed after the
+                    `maven-javadoc-plugin`; otherwise not all artifacts will be
+                    signed. -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
     </profiles>

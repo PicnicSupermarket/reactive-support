@@ -1,6 +1,7 @@
 # Picnic Reactive Support
 
 [![Build Status][travisci-badge]][travisci-builds]
+[![Maven Central][maven-central-badge]][maven-central-browse]
 
 A collection of Reactive Programming (RxJava and Reactor) utilities forged and
 implemented in the Picnic backend.
@@ -146,6 +147,8 @@ and style in order to keep the code as readable as possible.
 
 [flowable-retrywhen]: http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html#retryWhen-io.reactivex.functions.Function-
 [jitpack]: https://jitpack.io
+[maven-central-badge]: https://img.shields.io/maven-central/v/tech.picnic.reactive-support/reactive-support.svg
+[maven-central-browse]: https://repo1.maven.org/maven2/tech/picnic/reactive-support
 [new-issue]: https://github.com/PicnicSupermarket/reactive-support/issues/new
 [new-pr]: https://github.com/PicnicSupermarket/reactive-support/compare
 [scheduler]: http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Scheduler.html

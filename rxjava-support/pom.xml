@@ -11,6 +11,7 @@
     <artifactId>rxjava-support</artifactId>
 
     <name>Picnic :: Reactive Support :: RxJava Support</name>
+    <description>RxJava support library by Picnic.</description>
 
     <dependencies>
         <dependency>
