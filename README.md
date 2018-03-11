@@ -2,6 +2,7 @@
 
 [![Build Status][travisci-badge]][travisci-builds]
 [![Maven Central][maven-central-badge]][maven-central-browse]
+[![Coverage][coveralls-badge]][coveralls-stats]
 
 A collection of Reactive Programming (RxJava and Reactor) utilities forged and
 implemented in the Picnic backend.
@@ -145,6 +146,8 @@ Contributions are welcome! Feel free to file an [issue][new-issue] or open a
 When submitting code, please make every effort to follow existing conventions
 and style in order to keep the code as readable as possible.
 
+[coveralls-badge]: https://coveralls.io/repos/github/PicnicSupermarket/reactive-support/badge.svg?branch=master
+[coveralls-stats]: https://coveralls.io/github/PicnicSupermarket/reactive-support
 [flowable-retrywhen]: http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html#retryWhen-io.reactivex.functions.Function-
 [jitpack]: https://jitpack.io
 [maven-central-badge]: https://img.shields.io/maven-central/v/tech.picnic.reactive-support/reactive-support.svg

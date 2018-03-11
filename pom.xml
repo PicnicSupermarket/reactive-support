@@ -665,6 +665,11 @@
                     <version>1.0.0</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.eluder.coveralls</groupId>
+                    <artifactId>coveralls-maven-plugin</artifactId>
+                    <version>4.3.0</version>
+                </plugin>
+                <plugin>
                     <groupId>org.gaul</groupId>
                     <artifactId>modernizer-maven-plugin</artifactId>
                     <version>1.6.0</version>
@@ -681,6 +686,11 @@
                         <failOnViolations>false</failOnViolations>
                         <javaVersion>${version.jdk}</javaVersion>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.8.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.pitest</groupId>
