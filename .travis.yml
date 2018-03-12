@@ -1,3 +1,17 @@
 language: java
 jdk:
   - oraclejdk8
+install:
+  - mvn clean install -DskipTests
+script:
+  - mvn surefire:test
+cache:
+  directories:
+    # The local Maven repository in which third party dependencies are stored.
+    - ${HOME}/.m2/repository
+before_cache:
+  # Don't cache the artifacts we just generated, for multiple reasons: (1) we
+  # shouldn't need them next time around and (2) if we do, that indicates a
+  # dependency issue which might otherwise go unnoticed until next time we bump
+  # the project's version (i.e., when tagging).
+  - find "${HOME}/.m2" -delete -name "*-SNAPSHOT"
