@@ -2,6 +2,7 @@
 
 [![Build Status][travisci-badge]][travisci-builds]
 [![Maven Central][maven-central-badge]][maven-central-browse]
+[![Coverage][coveralls-badge]][coveralls-stats]
 
 A collection of Reactive Programming (RxJava and Reactor) utilities forged and
 implemented in the Picnic backend.
@@ -142,9 +143,14 @@ Observable<String> mapped = dataStream.map(String::toUpperCase);
 Contributions are welcome! Feel free to file an [issue][new-issue] or open a
 [pull request][new-pr].
 
-When submitting code, please make every effort to follow existing conventions
-and style in order to keep the code as readable as possible.
+When submitting changes, please make every effort to follow existing
+conventions and style in order to keep the code as readable as possible. New
+code must be covered by tests. As a rule of thumb, overall test coverage should
+not decrease. (There are exceptions to this rule, e.g. when more code is
+deleted than added.)
 
+[coveralls-badge]: https://coveralls.io/repos/github/PicnicSupermarket/reactive-support/badge.svg?branch=master
+[coveralls-stats]: https://coveralls.io/github/PicnicSupermarket/reactive-support
 [flowable-retrywhen]: http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html#retryWhen-io.reactivex.functions.Function-
 [jitpack]: https://jitpack.io
 [maven-central-badge]: https://img.shields.io/maven-central/v/tech.picnic.reactive-support/reactive-support.svg

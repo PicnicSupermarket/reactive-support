@@ -4,7 +4,7 @@ jdk:
 install:
   - mvn clean install -DskipTests
 script:
-  - mvn surefire:test
+  - mvn jacoco:prepare-agent surefire:test jacoco:report coveralls:report
 cache:
   directories:
     # The local Maven repository in which third party dependencies are stored.
