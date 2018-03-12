@@ -155,7 +155,7 @@ public final class RxSpring4Util {
    * @return a function converting a Publisher to a DeferredResult
    */
   public static <T, R extends Iterable<T>>
-      Function<? super Publisher<T>, DeferredResult<R>> publisherToDeferredResult(
+      Function<Publisher<T>, DeferredResult<R>> publisherToDeferredResult(
           Function<? super List<T>, R> collector) {
     return publisherToDeferredResult(collector, new DeferredResult<>());
   }
@@ -171,7 +171,7 @@ public final class RxSpring4Util {
    * @return a function converting a Publisher to a DeferredResult
    */
   public static <T, R extends Iterable<T>>
-      Function<? super Publisher<T>, DeferredResult<R>> publisherToDeferredResult(
+      Function<Publisher<T>, DeferredResult<R>> publisherToDeferredResult(
           Function<? super List<T>, R> collector, Duration timeout) {
     return publisherToDeferredResult(collector, new DeferredResult<>(timeout.toMillis()));
   }
