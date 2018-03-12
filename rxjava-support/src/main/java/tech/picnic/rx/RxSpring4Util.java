@@ -320,10 +320,14 @@ public final class RxSpring4Util {
       Duration heartbeat,
       LongFunction<T> heartbeatMapping,
       Scheduler scheduler) {
-    return flowable ->
-        Flowable.interval(heartbeat.toMillis(), MILLISECONDS, scheduler)
-            .map(heartbeatMapping::apply)
-            .mergeWith(flowable)
+    return publisher ->
+        Flowable.<T>fromPublisher(publisher)
+            .publish(
+                flowable ->
+                    flowable.mergeWith(
+                        Flowable.interval(heartbeat.toMillis(), MILLISECONDS, scheduler)
+                            .map(heartbeatMapping::apply)
+                            .takeUntil(flowable.ignoreElements().toFlowable())))
             .to(publisherToSse(mediaType, NO_TIMEOUT));
   }
 
