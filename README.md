@@ -3,6 +3,10 @@
 [![Build Status][travisci-badge]][travisci-builds]
 [![Maven Central][maven-central-badge]][maven-central-browse]
 [![Coverage][coveralls-badge]][coveralls-stats]
+[![SonarCloud Quality Gate][sonarcloud-badge-quality-gate]][sonarcloud-dashboard]
+[![SonarCloud Bugs][sonarcloud-badge-bugs]][sonarcloud-measure-reliability]
+[![SonarCloud Debt Ratio][sonarcloud-badge-debt-ratio]][sonarcloud-measure-maintainability]
+[![SonarCloud Vulnerabilities][sonarcloud-badge-vulnerabilities]][sonarcloud-measure-security]
 [![BCH compliance][bettercodehub-badge]][bettercodehub]
 
 A collection of Reactive Programming (RxJava and Reactor) utilities forged and
@@ -161,5 +165,13 @@ deleted than added.)
 [new-issue]: https://github.com/PicnicSupermarket/reactive-support/issues/new
 [new-pr]: https://github.com/PicnicSupermarket/reactive-support/compare
 [scheduler]: http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Scheduler.html
+[sonarcloud-badge-bugs]: https://sonarcloud.io/api/badges/measure?key=tech.picnic.reactive-support%3Areactive-support%3Amaster&metric=bugs
+[sonarcloud-badge-debt-ratio]: https://sonarcloud.io/api/badges/measure?key=tech.picnic.reactive-support%3Areactive-support%3Amaster&metric=sqale_debt_ratio
+[sonarcloud-badge-quality-gate]: https://sonarcloud.io/api/badges/gate?key=tech.picnic.reactive-support%3Areactive-support%3Amaster
+[sonarcloud-badge-vulnerabilities]: https://sonarcloud.io/api/badges/measure?key=tech.picnic.reactive-support%3Areactive-support%3Amaster&metric=vulnerabilities
+[sonarcloud-dashboard]: https://sonarcloud.io/dashboard?id=tech.picnic.reactive-support%3Areactive-support%3Amaster
+[sonarcloud-measure-maintainability]: https://sonarcloud.io/component_measures?id=tech.picnic.reactive-support%3Areactive-support%3Amaster&metric=Coverage
+[sonarcloud-measure-reliability]: https://sonarcloud.io/component_measures?id=tech.picnic.reactive-support%3Areactive-support%3Amaster&metric=Reliability
+[sonarcloud-measure-security]: https://sonarcloud.io/component_measures?id=tech.picnic.reactive-support%3Areactive-support%3Amaster&metric=Security
 [travisci-badge]: https://travis-ci.org/PicnicSupermarket/reactive-support.svg?branch=master
 [travisci-builds]: https://travis-ci.org/PicnicSupermarket/reactive-support
