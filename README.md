@@ -5,8 +5,8 @@
 [![Coverage][coveralls-badge]][coveralls-stats]
 [![SonarCloud Quality Gate][sonarcloud-badge-quality-gate]][sonarcloud-dashboard]
 [![SonarCloud Bugs][sonarcloud-badge-bugs]][sonarcloud-measure-reliability]
-[![SonarCloud Debt Ratio][sonarcloud-badge-debt-ratio]][sonarcloud-measure-maintainability]
 [![SonarCloud Vulnerabilities][sonarcloud-badge-vulnerabilities]][sonarcloud-measure-security]
+[![SonarCloud Debt Ratio][sonarcloud-badge-debt-ratio]][sonarcloud-measure-maintainability]
 [![BCH compliance][bettercodehub-badge]][bettercodehub]
 
 A collection of Reactive Programming (RxJava and Reactor) utilities forged and
@@ -14,13 +14,13 @@ implemented in the Picnic backend.
 
 ## How to Install
 
-Using [JitPack][jitpack]:
+Artifacts are hosted on [Maven's Central Repository][maven-central-search]:
 
 ### Gradle
 
 ```groovy
 dependencies {
-    compile 'com.github.PicnicSupermarket.reactive-support:rxjava-support:master-SNAPSHOT'
+    compile 'tech.picnic.reactive-support:rxjava-support:0.0.1'
 }
 ```
 
@@ -28,9 +28,9 @@ dependencies {
 
 ```xml
 <dependency>
-    <groupId>com.github.PicnicSupermarket.reactive-support</groupId>
+    <groupId>tech.picnic.reactive-support</groupId>
     <artifactId>rxjava-support</artifactId>
-    <version>master-SNAPSHOT</version>
+    <version>0.0.1</version>
 </dependency>
 ```
 
@@ -143,9 +143,9 @@ deleted than added.)
 [coveralls-badge]: https://coveralls.io/repos/github/PicnicSupermarket/reactive-support/badge.svg?branch=master
 [coveralls-stats]: https://coveralls.io/github/PicnicSupermarket/reactive-support
 [flowable-retrywhen]: http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html#retryWhen-io.reactivex.functions.Function-
-[jitpack]: https://jitpack.io
 [maven-central-badge]: https://img.shields.io/maven-central/v/tech.picnic.reactive-support/reactive-support.svg
 [maven-central-browse]: https://repo1.maven.org/maven2/tech/picnic/reactive-support
+[maven-central-search]: https://search.maven.org
 [new-issue]: https://github.com/PicnicSupermarket/reactive-support/issues/new
 [new-pr]: https://github.com/PicnicSupermarket/reactive-support/compare
 [scheduler]: http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Scheduler.html
