@@ -167,7 +167,7 @@ public final class RxSpring4UtilTest {
             + "data:keep-alive #1\n\n"
             + "data:foo\n\n"
             + "data:keep-alive #2\n\n");
-    testScheduler.advanceTimeTo(500, TimeUnit.MILLISECONDS);
+    testScheduler.advanceTimeTo(1000, TimeUnit.MILLISECONDS);
     assertEquals(
         response.getContentAsString(),
         ""
@@ -176,11 +176,7 @@ public final class RxSpring4UtilTest {
             + "data:foo\n\n"
             + "data:keep-alive #2\n\n"
             + "data:keep-alive #3\n\n"
-            + "data:foo\n\n"
-            + "data:keep-alive #4\n\n");
-
-    // XXX: At this point emission should stop, but that seems hard to test with the test scheduler;
-    // more keep-alives are emitted if the test scheduler is advanced further.
+            + "data:foo\n\n");
   }
 
   public void testPublisherToSseWithKeepAliveAndError() throws Exception {
