@@ -20,4 +20,4 @@ before_cache:
   # shouldn't need them next time around and (2) if we do, that indicates a
   # dependency issue which might otherwise go unnoticed until next time we bump
   # the project's version (i.e., when tagging).
-  - find "${HOME}/.m2" -delete -name "*-SNAPSHOT"
+  - find "${HOME}/.m2/repository" -depth -name '*-SNAPSHOT' -exec rm -r '{}' \;
