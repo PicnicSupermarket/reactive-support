@@ -127,22 +127,6 @@ public SseEmitter sseEndpoint() {
 }
 ```
 
-### Custom Types
-
-The following types can help save on some boilerplate code.
-
-#### `AutoConnectUtil`
-
-This util converts reactive types (`Observables`, `Flowables`), `Callables` and
-`Iterables` etc. into an autoconnected replay `Observable`/`Flowable`. For example:
-
-```java
-Observable<String> dataStream = AutoConnectUtil.fromObservable(expensiveIoObs);
-// Result replayed, i.e. expensive I/O is triggered once and then replayed to all subscribers
-Single<Long> count = dataStream.count();
-Observable<String> mapped = dataStream.map(String::toUpperCase);
-```
-
 ## Contributing
 
 Contributions are welcome! Feel free to file an [issue][new-issue] or open a
