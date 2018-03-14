@@ -592,6 +592,7 @@
                     <configuration>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
                         <releaseProfiles>release</releaseProfiles>
+                        <tagNameFormat>v@{project.version}</tagNameFormat>
                         <useReleaseProfile>false</useReleaseProfile>
                     </configuration>
                 </plugin>
