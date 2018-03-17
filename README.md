@@ -99,7 +99,7 @@ someFlowable
              .build())
 ```
 
-### `RxSpringUtil`
+### `RxSpring4Util`
 
 This is a utility that can be used to convert RxJava reactive types into
 asynchronous Spring web types. See below for a number of example usages.
