@@ -24,6 +24,8 @@ public final class PicnicRxPlugins {
    *                 m -> {
    *                     if (m != null) {
    *                         MDC.setContextMap(m);
+   *                     } else {
+   *                         MDC.clear();
    *                     }
    *                 });
    * PicnicRxPlugins.configureContextPropagation(mdcPropagation);
