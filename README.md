@@ -67,6 +67,8 @@ public final class RxServletContextListener implements ServletContextListener {
                         m -> {
                             if (m != null) {
                                 MDC.setContextMap(m);
+                            } else {
+                                MDC.clear();
                             }
                         });
         RxThreadLocal<?> securityContextPropagation =
