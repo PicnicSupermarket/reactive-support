@@ -2,11 +2,11 @@ package tech.picnic.rx;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
 import static tech.picnic.rx.RxSpring4Util.completableToDeferredResult;
 import static tech.picnic.rx.RxSpring4Util.maybeToDeferredResult;
 import static tech.picnic.rx.RxSpring4Util.observableToDeferredResult;
@@ -27,6 +27,10 @@ import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -39,18 +43,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
-@Test(singleThreaded = true)
+@TestInstance(Lifecycle.PER_CLASS)
 public final class RxSpring4UtilTest {
   private final TestScheduler testScheduler = new TestScheduler();
 
   @SuppressWarnings("NullAway")
   private MockMvc mockMvc;
 
-  @BeforeMethod
-  public void setup() {
+  @BeforeAll
+  void setUp() {
     mockMvc =
         MockMvcBuilders.standaloneSetup(new TestController(testScheduler))
             .alwaysExpect(request().asyncStarted())
@@ -61,6 +63,7 @@ public final class RxSpring4UtilTest {
             .build();
   }
 
+  @Test
   public void testSingleToDeferredResult() throws Exception {
     mockMvc
         .perform(get("/singleToDeferredResult?value=foo"))
@@ -70,6 +73,7 @@ public final class RxSpring4UtilTest {
         .andExpect(request().asyncResult(instanceOf(IllegalArgumentException.class)));
   }
 
+  @Test
   public void testMaybeToDeferredResult() throws Exception {
     assertNull(mockMvc.perform(get("/maybeToDeferredResult")).andReturn().getAsyncResult());
     mockMvc
@@ -80,6 +84,7 @@ public final class RxSpring4UtilTest {
         .andExpect(request().asyncResult(instanceOf(IllegalArgumentException.class)));
   }
 
+  @Test
   public void testObservableToDeferredResult() throws Exception {
     mockMvc
         .perform(get("/observableToDeferredResult?value=foo"))
@@ -95,6 +100,7 @@ public final class RxSpring4UtilTest {
         .andExpect(request().asyncResult(instanceOf(IllegalArgumentException.class)));
   }
 
+  @Test
   public void testPublisherToDeferredResult() throws Exception {
     mockMvc
         .perform(get("/publisherToDeferredResult?value=foo"))
@@ -110,6 +116,7 @@ public final class RxSpring4UtilTest {
         .andExpect(request().asyncResult(instanceOf(IllegalArgumentException.class)));
   }
 
+  @Test
   public void testCompletableToDeferredResult() throws Exception {
     assertNull(
         mockMvc
@@ -121,6 +128,7 @@ public final class RxSpring4UtilTest {
         .andExpect(request().asyncResult(instanceOf(IllegalArgumentException.class)));
   }
 
+  @Test
   public void testObservableToSse() throws Exception {
     mockMvc.perform(get("/observableToSse?value=foo")).andExpect(content().string("data:foo\n\n"));
     mockMvc
@@ -132,6 +140,7 @@ public final class RxSpring4UtilTest {
         .andExpect(request().asyncResult(instanceOf(IllegalArgumentException.class)));
   }
 
+  @Test
   public void testPublisherToSse() throws Exception {
     mockMvc.perform(get("/publisherToSse?value=foo")).andExpect(content().string("data:foo\n\n"));
     mockMvc
@@ -143,6 +152,7 @@ public final class RxSpring4UtilTest {
         .andExpect(request().asyncResult(instanceOf(IllegalArgumentException.class)));
   }
 
+  @Test
   public void testPublisherToSseWithKeepAlive() throws Exception {
     testScheduler.advanceTimeTo(0, MILLISECONDS);
     MockHttpServletResponse response =
@@ -151,34 +161,35 @@ public final class RxSpring4UtilTest {
             .andReturn()
             .getResponse();
     testScheduler.advanceTimeTo(99, TimeUnit.MILLISECONDS);
-    assertEquals(response.getContentAsString(), "");
+    assertEquals("", response.getContentAsString());
     testScheduler.advanceTimeTo(249, TimeUnit.MILLISECONDS);
     assertEquals(
-        response.getContentAsString(), "data:keep-alive #0\n\n" + "data:keep-alive #1\n\n");
+        "data:keep-alive #0\n\n" + "data:keep-alive #1\n\n", response.getContentAsString());
     testScheduler.advanceTimeTo(250, TimeUnit.MILLISECONDS);
     assertEquals(
-        response.getContentAsString(),
-        "data:keep-alive #0\n\n" + "data:keep-alive #1\n\n" + "data:foo\n\n");
+        "data:keep-alive #0\n\n" + "data:keep-alive #1\n\n" + "data:foo\n\n",
+        response.getContentAsString());
     testScheduler.advanceTimeTo(300, TimeUnit.MILLISECONDS);
     assertEquals(
-        response.getContentAsString(),
         ""
             + "data:keep-alive #0\n\n"
             + "data:keep-alive #1\n\n"
             + "data:foo\n\n"
-            + "data:keep-alive #2\n\n");
+            + "data:keep-alive #2\n\n",
+        response.getContentAsString());
     testScheduler.advanceTimeTo(1000, TimeUnit.MILLISECONDS);
     assertEquals(
-        response.getContentAsString(),
         ""
             + "data:keep-alive #0\n\n"
             + "data:keep-alive #1\n\n"
             + "data:foo\n\n"
             + "data:keep-alive #2\n\n"
             + "data:keep-alive #3\n\n"
-            + "data:foo\n\n");
+            + "data:foo\n\n",
+        response.getContentAsString());
   }
 
+  @Test
   public void testPublisherToSseWithKeepAliveAndError() throws Exception {
     testScheduler.advanceTimeTo(0, MILLISECONDS);
     MockHttpServletResponse response =
@@ -187,13 +198,14 @@ public final class RxSpring4UtilTest {
             .andReturn()
             .getResponse();
     testScheduler.advanceTimeTo(149, TimeUnit.MILLISECONDS);
-    assertEquals(response.getContentAsString(), "data:keep-alive #0\n\n");
+    assertEquals("data:keep-alive #0\n\n", response.getContentAsString());
     testScheduler.advanceTimeTo(200, TimeUnit.MILLISECONDS);
-    assertEquals(response.getContentAsString(), "data:keep-alive #0\n\n");
+    assertEquals("data:keep-alive #0\n\n", response.getContentAsString());
 
     // XXX: An error prevents further emissions, but there is no other evidence of it in the output.
   }
 
+  @Test
   public void testPublisherToSseWithComplexObject() throws Exception {
     mockMvc
         .perform(get("/publisherToSse/with-complex-object?repeat=2"))

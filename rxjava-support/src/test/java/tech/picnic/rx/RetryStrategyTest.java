@@ -1,17 +1,17 @@
 package tech.picnic.rx;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.TestScheduler;
 import io.reactivex.subscribers.TestSubscriber;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
-@Test
 public final class RetryStrategyTest {
+  @Test
   public void testOnlyIf() throws Exception {
     errorSource(2)
         .retryWhen(
@@ -30,6 +30,7 @@ public final class RetryStrategyTest {
         .assertErrorMessage("Error #1");
   }
 
+  @Test
   public void testExponentialBackoff() throws Exception {
     AtomicInteger retries = new AtomicInteger();
     TestScheduler scheduler = new TestScheduler();
@@ -46,15 +47,16 @@ public final class RetryStrategyTest {
     for (int i = 1, d = 100, t = 0; i <= 10; ++i, t += d, d *= 2) {
       scheduler.advanceTimeTo(t, MILLISECONDS);
       test.assertNotTerminated().assertNoValues();
-      assertEquals(retries.get(), i);
+      assertEquals(i, retries.get());
       scheduler.advanceTimeBy(d - 1, MILLISECONDS);
       test.assertNotTerminated().assertNoValues();
-      assertEquals(retries.get(), i);
+      assertEquals(i, retries.get());
     }
     scheduler.advanceTimeBy(1, MILLISECONDS);
     test.assertValue(11).assertComplete();
   }
 
+  @Test
   public void testFixedBackoff() throws Exception {
     TestScheduler scheduler = new TestScheduler();
     TestSubscriber<Integer> test =
@@ -71,6 +73,7 @@ public final class RetryStrategyTest {
     test.assertValue(11).assertComplete();
   }
 
+  @Test
   public void testCustomBackoff() throws Exception {
     TestScheduler scheduler = new TestScheduler();
     TestSubscriber<Integer> test =
@@ -87,6 +90,7 @@ public final class RetryStrategyTest {
     test.assertError(RuntimeException.class).assertErrorMessage("Error #3");
   }
 
+  @Test
   public void testTimes() throws Exception {
     errorSource(10)
         .retryWhen(RetryStrategy.always().times(5).build())
