@@ -1,6 +1,7 @@
 package tech.picnic.rx;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
@@ -9,7 +10,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.testng.Assert.assertEquals;
 import static tech.picnic.rx.RxSpring4Util.completableToDeferredResult;
 import static tech.picnic.rx.RxSpring4Util.maybeToDeferredResult;
 import static tech.picnic.rx.RxSpring4Util.observableToDeferredResult;
@@ -30,6 +30,10 @@ import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -45,18 +49,16 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
-@Test(singleThreaded = true)
+@TestInstance(Lifecycle.PER_CLASS)
 public final class RxSpring4UtilTest {
   private final TestScheduler testScheduler = new TestScheduler();
 
   @SuppressWarnings("NullAway")
   private MockMvc mockMvc;
 
-  @BeforeMethod
-  public void setup() {
+  @BeforeAll
+  void setUp() {
     mockMvc =
         MockMvcBuilders.standaloneSetup(new TestController(testScheduler))
             .setMessageConverters(
@@ -66,17 +68,20 @@ public final class RxSpring4UtilTest {
             .build();
   }
 
+  @Test
   public void testSingleToDeferredResult() throws Exception {
     verifyAsyncGetRequest("/singleToDeferredResult?value=foo", OK, "foo");
     verifyAsyncGetRequest("/singleToDeferredResult?value=error", BAD_REQUEST, "");
   }
 
+  @Test
   public void testMaybeToDeferredResult() throws Exception {
     verifyAsyncGetRequest("/maybeToDeferredResult", NOT_FOUND, "");
     verifyAsyncGetRequest("/maybeToDeferredResult?value=foo", OK, "foo");
     verifyAsyncGetRequest("/maybeToDeferredResult?value=error", BAD_REQUEST, "");
   }
 
+  @Test
   public void testObservableToDeferredResult() throws Exception {
     verifyAsyncGetRequest("/observableToDeferredResult?value=foo", OK, "[\"foo\"]");
     verifyAsyncGetRequest(
@@ -85,6 +90,7 @@ public final class RxSpring4UtilTest {
     verifyAsyncGetRequest("/observableToDeferredResult?value=error", BAD_REQUEST, "");
   }
 
+  @Test
   public void testPublisherToDeferredResult() throws Exception {
     verifyAsyncGetRequest("/publisherToDeferredResult?value=foo", OK, "[\"foo\"]");
     verifyAsyncGetRequest("/publisherToDeferredResult?value=bar&repeat=2", OK, "[\"bar\",\"bar\"]");
@@ -92,11 +98,13 @@ public final class RxSpring4UtilTest {
     verifyAsyncGetRequest("/publisherToDeferredResult?value=error", BAD_REQUEST, "");
   }
 
+  @Test
   public void testCompletableToDeferredResult() throws Exception {
     verifyAsyncGetRequest("/completableToDeferredResult?fail=false", OK, "");
     verifyAsyncGetRequest("/completableToDeferredResult?fail=true", BAD_REQUEST, "");
   }
 
+  @Test
   public void testObservableToSse() throws Exception {
     verifySyncGetRequest("/observableToSse?value=foo", OK, "data:foo\n\n");
     verifySyncGetRequest("/observableToSse?value=bar&repeat=2", OK, "data:bar\n\ndata:bar\n\n");
@@ -104,6 +112,7 @@ public final class RxSpring4UtilTest {
     verifyAsyncGetRequest("/observableToSse?value=error", BAD_REQUEST, "");
   }
 
+  @Test
   public void testPublisherToSse() throws Exception {
     verifySyncGetRequest("/publisherToSse?value=foo", OK, "data:foo\n\n");
     verifySyncGetRequest("/publisherToSse?value=bar&repeat=2", OK, "data:bar\n\ndata:bar\n\n");
@@ -111,6 +120,7 @@ public final class RxSpring4UtilTest {
     verifyAsyncGetRequest("/publisherToSse?value=error", BAD_REQUEST, "");
   }
 
+  @Test
   public void testPublisherToSseWithKeepAlive() throws Exception {
     testScheduler.advanceTimeTo(0, MILLISECONDS);
     MockHttpServletResponse response =
@@ -118,34 +128,35 @@ public final class RxSpring4UtilTest {
             .andReturn()
             .getResponse();
     testScheduler.advanceTimeTo(99, TimeUnit.MILLISECONDS);
-    assertEquals(response.getContentAsString(), "");
+    assertEquals("", response.getContentAsString());
     testScheduler.advanceTimeTo(249, TimeUnit.MILLISECONDS);
     assertEquals(
-        response.getContentAsString(), "data:keep-alive #0\n\n" + "data:keep-alive #1\n\n");
+        "data:keep-alive #0\n\n" + "data:keep-alive #1\n\n", response.getContentAsString());
     testScheduler.advanceTimeTo(250, TimeUnit.MILLISECONDS);
     assertEquals(
-        response.getContentAsString(),
-        "data:keep-alive #0\n\n" + "data:keep-alive #1\n\n" + "data:foo\n\n");
+        "data:keep-alive #0\n\n" + "data:keep-alive #1\n\n" + "data:foo\n\n",
+        response.getContentAsString());
     testScheduler.advanceTimeTo(300, TimeUnit.MILLISECONDS);
     assertEquals(
-        response.getContentAsString(),
         ""
             + "data:keep-alive #0\n\n"
             + "data:keep-alive #1\n\n"
             + "data:foo\n\n"
-            + "data:keep-alive #2\n\n");
+            + "data:keep-alive #2\n\n",
+        response.getContentAsString());
     testScheduler.advanceTimeTo(1000, TimeUnit.MILLISECONDS);
     assertEquals(
-        response.getContentAsString(),
         ""
             + "data:keep-alive #0\n\n"
             + "data:keep-alive #1\n\n"
             + "data:foo\n\n"
             + "data:keep-alive #2\n\n"
             + "data:keep-alive #3\n\n"
-            + "data:foo\n\n");
+            + "data:foo\n\n",
+        response.getContentAsString());
   }
 
+  @Test
   public void testPublisherToSseWithKeepAliveAndError() throws Exception {
     testScheduler.advanceTimeTo(0, MILLISECONDS);
     MockHttpServletResponse response =
@@ -153,13 +164,14 @@ public final class RxSpring4UtilTest {
             .andReturn()
             .getResponse();
     testScheduler.advanceTimeTo(149, TimeUnit.MILLISECONDS);
-    assertEquals(response.getContentAsString(), "data:keep-alive #0\n\n");
+    assertEquals("data:keep-alive #0\n\n", response.getContentAsString());
     testScheduler.advanceTimeTo(200, TimeUnit.MILLISECONDS);
-    assertEquals(response.getContentAsString(), "data:keep-alive #0\n\n");
+    assertEquals("data:keep-alive #0\n\n", response.getContentAsString());
 
     // XXX: An error prevents further emissions, but there is no other evidence of it in the output.
   }
 
+  @Test
   public void testPublisherToSseWithComplexObject() throws Exception {
     verifySyncGetRequest(
         "/publisherToSse/with-complex-object?repeat=2",

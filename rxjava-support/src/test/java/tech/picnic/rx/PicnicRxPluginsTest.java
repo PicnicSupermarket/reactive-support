@@ -1,6 +1,6 @@
 package tech.picnic.rx;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.common.util.concurrent.MoreExecutors;
 import io.reactivex.Observable;
@@ -17,25 +17,25 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-@Test(singleThreaded = true)
 public final class PicnicRxPluginsTest {
   private final ConcurrentMap<Context, AtomicInteger> verificationCounters =
       new ConcurrentHashMap<>();
 
-  @BeforeClass
-  void init() {
+  @BeforeAll
+  static void setUp() {
     PicnicRxPlugins.configureContextPropagation(Context.createRxThreadLocal());
   }
 
-  @AfterClass
-  void clean() {
+  @AfterAll
+  static void tearDown() {
     PicnicRxPlugins.unsetContextPropagation();
   }
 
+  @Test
   public void testPropagate() {
     Observable<Integer> obs = Observable.just(1, 2, 3);
 
@@ -50,7 +50,7 @@ public final class PicnicRxPluginsTest {
     verifyVerificationCounter(ctx2, 3);
 
     // With context propagation
-    init();
+    setUp();
     obs.subscribeOn(Schedulers.io())
         .doOnNext(i -> verifyActive(ctx1))
         .ignoreElements()
@@ -58,6 +58,7 @@ public final class PicnicRxPluginsTest {
     verifyVerificationCounter(ctx1, 3);
   }
 
+  @Test
   public void testObserveOnAnotherScheduler() {
     Observable<Integer> obs = Observable.just(1, 2, 3);
 
@@ -71,6 +72,7 @@ public final class PicnicRxPluginsTest {
     verifyVerificationCounter(ctx, 6);
   }
 
+  @Test
   public void testPropagateOnMultipleSchedulers() {
     Observable<Integer> obs = Observable.just(1, 2, 3);
 
@@ -84,6 +86,7 @@ public final class PicnicRxPluginsTest {
     verifyVerificationCounter(ctx, 6);
   }
 
+  @Test
   public void testNotLeaking() throws InterruptedException {
     Observable<Integer> obs = Observable.just(1, 2, 3);
     Scheduler singleScheduler = Schedulers.single();
@@ -123,6 +126,7 @@ public final class PicnicRxPluginsTest {
     verifyVerificationCounter(ctx4, 3);
   }
 
+  @Test
   public void testContextSwitchBeforeConsumption() {
     Observable<Integer> obs = Observable.just(1, 2, 3);
 
@@ -135,6 +139,7 @@ public final class PicnicRxPluginsTest {
     verifyVerificationCounter(ctx2, 3);
   }
 
+  @Test
   public void testPropagationOnSameThread() {
     Observable<Integer> obs = Observable.just(1, 2, 3);
 
@@ -147,6 +152,7 @@ public final class PicnicRxPluginsTest {
     verifyActive(ctx);
   }
 
+  @Test
   public void testEmptyContextIsPropagated() {
     Observable<Integer> obs = Observable.just(1, 2, 3);
 
@@ -166,6 +172,7 @@ public final class PicnicRxPluginsTest {
     }
   }
 
+  @Test
   public void testTestSchedulerContextPropagation() throws InterruptedException {
     Context ctx = Context.createRandom().applyToCurrentThread();
 
@@ -182,6 +189,7 @@ public final class PicnicRxPluginsTest {
     verifyVerificationCounter(ctx, 3);
   }
 
+  @Test
   public void testDirectExecutor() {
     Context ctx = Context.createRandom().applyToCurrentThread();
 
@@ -199,7 +207,7 @@ public final class PicnicRxPluginsTest {
 
   private void verifyVerificationCounter(Context ctx, int expected) {
     assertEquals(
-        this.verificationCounters.getOrDefault(ctx, new AtomicInteger()).intValue(), expected);
+        expected, this.verificationCounters.getOrDefault(ctx, new AtomicInteger()).intValue());
   }
 
   static final class Context {
@@ -230,7 +238,7 @@ public final class PicnicRxPluginsTest {
     }
 
     void verifyCurrentThread() {
-      assertEquals(threadLocalContext.get(), token.orElse(null));
+      assertEquals(token.orElse(null), threadLocalContext.get());
     }
 
     static RxThreadLocal<String> createRxThreadLocal() {
