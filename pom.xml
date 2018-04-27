@@ -75,7 +75,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.checkstyle>8.10</version.checkstyle>
-        <version.error-prone>2.2.0</version.error-prone>
+        <version.error-prone>2.3.1</version.error-prone>
         <version.extra-enforcer-rules>1.0-beta-7</version.extra-enforcer-rules>
         <version.guava-beta-checker>1.0</version.guava-beta-checker>
         <version.javadoc>2.10.4</version.javadoc>
