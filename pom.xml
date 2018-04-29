@@ -78,13 +78,11 @@
         <version.error-prone>2.2.0</version.error-prone>
         <version.extra-enforcer-rules>1.0-beta-7</version.extra-enforcer-rules>
         <version.guava-beta-checker>1.0</version.guava-beta-checker>
-        <version.javac>9+181-r4173-1</version.javac>
         <version.javadoc>2.10.4</version.javadoc>
         <version.jdk>1.8</version.jdk>
         <version.maven>3.5.3</version.maven>
         <version.nullaway>0.3.5</version.nullaway>
         <version.plexus-compiler>2.8.3</version.plexus-compiler>
-        <version.slf4j>1.7.25</version.slf4j>
         <version.surefire>2.21.0</version.surefire>
         <!-- Our build system (Travis CI) provides a monotonically increasing
         build number. When building locally, this number is obviously absent.
@@ -119,8 +117,6 @@
             <!-- On Mac OS X, running in headless mode prevents the forked JVMs
             from showing up in the dock and capturing window focus. -->
             -Djava.awt.headless=true
-            <!-- XXX: EXPLAIN -->
-            -Xbootclasspath/p:${settings.localRepository}/com/google/errorprone/javac/${version.javac}/javac-${version.javac}.jar 
         </argLine>
     </properties>
 
@@ -139,38 +135,6 @@
                 <version>3.0.2</version>
             </dependency>
             <dependency>
-                <groupId>com.google.errorprone</groupId>
-                <artifactId>error_prone_annotation</artifactId>
-                <version>${version.error-prone}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.errorprone</groupId>
-                <artifactId>error_prone_annotations</artifactId>
-                <version>${version.error-prone}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.errorprone</groupId>
-                <artifactId>error_prone_check_api</artifactId>
-                <version>${version.error-prone}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.errorprone</groupId>
-                <artifactId>error_prone_test_helpers</artifactId>
-                <version>${version.error-prone}</version>
-                <exclusions>
-                    <!-- We're using `com.google.errorprone:javac` instead. -->
-                    <exclusion>
-                        <groupId>com.sun</groupId>
-                        <artifactId>tools</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>com.google.errorprone</groupId>
-                <artifactId>javac</artifactId>
-                <version>${version.javac}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>24.0-jre</version>
@@ -179,11 +143,6 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava-beta-checker</artifactId>
                 <version>${version.guava-beta-checker}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.truth</groupId>
-                <artifactId>truth</artifactId>
-                <version>0.37</version>
             </dependency>
             <dependency>
                 <groupId>com.puppycrawl.tools</groupId>
@@ -241,11 +200,6 @@
                 <version>4.3.14.RELEASE</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.security</groupId>
-                <artifactId>spring-security-core</artifactId>
-                <version>4.2.3.RELEASE</version>
             </dependency>
             <dependency>
                 <groupId>org.testng</groupId>
