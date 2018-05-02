@@ -81,9 +81,7 @@
         <version.javac>9+181-r4173-1</version.javac>
         <version.javadoc>2.10.4</version.javadoc>
         <version.jdk>1.8</version.jdk>
-        <!-- XXX: We'd like to force usage of the latest Maven release, but
-        JitPack uses Mavem 3.2.5. Revisit this once we deploy to Maven Central. -->
-        <version.maven>3.2.5</version.maven>
+        <version.maven>3.5.3</version.maven>
         <version.nullaway>0.3.5</version.nullaway>
         <version.plexus-compiler>2.8.3</version.plexus-compiler>
         <version.slf4j>1.7.25</version.slf4j>
@@ -325,6 +323,14 @@
                         <failOnMissingClasses>false</failOnMissingClasses>
                         <failOnViolation>false</failOnViolation>
                         <targetVersion>${version.jdk}</targetVersion>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>io.takari</groupId>
+                    <artifactId>maven</artifactId>
+                    <version>0.6.0</version>
+                    <configuration>
+                        <maven>${version.maven}</maven>
                     </configuration>
                 </plugin>
                 <plugin>
