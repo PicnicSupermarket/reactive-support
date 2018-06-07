@@ -74,7 +74,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.checkstyle>8.10</version.checkstyle>
         <version.error-prone>2.3.1</version.error-prone>
         <version.extra-enforcer-rules>1.0-beta-7</version.extra-enforcer-rules>
         <version.guava-beta-checker>1.0</version.guava-beta-checker>
@@ -143,11 +142,6 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava-beta-checker</artifactId>
                 <version>${version.guava-beta-checker}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.puppycrawl.tools</groupId>
-                <artifactId>checkstyle</artifactId>
-                <version>${version.checkstyle}</version>
             </dependency>
             <dependency>
                 <groupId>com.uber.nullaway</groupId>
@@ -408,7 +402,7 @@
                         <dependency>
                             <groupId>com.puppycrawl.tools</groupId>
                             <artifactId>checkstyle</artifactId>
-                            <version>${version.checkstyle}</version>
+                            <version>8.14</version>
                         </dependency>
                     </dependencies>
                 </plugin>
