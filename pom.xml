@@ -80,7 +80,7 @@
         <version.javadoc>2.10.4</version.javadoc>
         <version.jdk>1.8</version.jdk>
         <version.maven>3.5.3</version.maven>
-        <version.nullaway>0.4.4</version.nullaway>
+        <version.nullaway>0.6.3</version.nullaway>
         <version.plexus-compiler>2.8.4</version.plexus-compiler>
         <version.surefire>2.21.0</version.surefire>
         <!-- Our build system (Travis CI) provides a monotonically increasing
