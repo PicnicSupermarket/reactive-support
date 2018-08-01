@@ -129,10 +129,23 @@ public final class RetryStrategy implements Function<Flowable<Throwable>, Flowab
      * @return this {@link RetryStrategy.Builder}; useful for method chaining
      */
     public Builder exponentialBackoff(Duration initialDelay) {
+      return customBackoff(getExponentialBackoff(initialDelay).map(Duration::ofMillis));
+    }
+
+    /**
+     * Configures the use of an exponentially increasing backoff delay but after a {@code
+     * backoffLimit} amount of retries, the last backoff delay will be used indefinitely.
+     *
+     * @param initialDelay the delay before the first retry
+     * @param backoffLimit the amount of retries used for the exponential backoff strategy before
+     *     moving into a fixed delay strategy.
+     * @return this {@link RetryStrategy.Builder}; useful for method chaining
+     */
+    public Builder boundedExponentialBackoff(Duration initialDelay, int backoffLimit) {
+      double pow = Math.pow(2, backoffLimit) * initialDelay.toMillis();
       return customBackoff(
-          Flowable.just(2)
-              .repeat()
-              .scan(initialDelay.toMillis(), (i, j) -> i * j)
+          getExponentialBackoff(initialDelay)
+              .map(value -> Math.min(value, (long) pow))
               .map(Duration::ofMillis));
     }
 
@@ -213,6 +226,10 @@ public final class RetryStrategy implements Function<Flowable<Throwable>, Flowab
      */
     public RetryStrategy build() {
       return new RetryStrategy(this);
+    }
+
+    private static Flowable<Long> getExponentialBackoff(Duration initialDelay) {
+      return Flowable.just(2).repeat().scan(initialDelay.toMillis(), (i, j) -> i * j);
     }
   }
 }
