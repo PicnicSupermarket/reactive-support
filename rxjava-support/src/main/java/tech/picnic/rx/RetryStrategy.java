@@ -2,6 +2,7 @@ package tech.picnic.rx;
 
 import static io.reactivex.internal.functions.Functions.identity;
 
+import com.google.common.math.LongMath;
 import io.reactivex.Flowable;
 import io.reactivex.Scheduler;
 import io.reactivex.functions.Function;
@@ -150,7 +151,7 @@ public final class RetryStrategy implements Function<Flowable<Throwable>, Flowab
     private static Flowable<Duration> getExponentialDelays(Duration initialDelay) {
       return Flowable.just(2)
           .repeat()
-          .scan(initialDelay.toMillis(), (i, j) -> i * j)
+          .scan(initialDelay.toMillis(), LongMath::saturatedMultiply)
           .map(Duration::ofMillis);
     }
 
