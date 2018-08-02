@@ -143,9 +143,8 @@ public final class RetryStrategy implements Function<Flowable<Throwable>, Flowab
      * @return this {@link RetryStrategy.Builder}; useful for method chaining
      */
     public Builder boundedExponentialBackoff(Duration initialDelay, int backoffLimit) {
-      Flowable<Duration> exp = getExponentialDelays(initialDelay);
-      return customBackoff(
-          exp.limit(backoffLimit).concatWith(exp.skip(backoffLimit).limit(1).repeat()));
+      Flowable<Duration> exp = getExponentialDelays(initialDelay).limit(backoffLimit + 1);
+      return customBackoff(exp.skipLast(1).concatWith(exp.takeLast(1).repeat()));
     }
 
     private static Flowable<Duration> getExponentialDelays(Duration initialDelay) {
