@@ -64,7 +64,7 @@ public final class RetryStrategyTest {
             .retryWhen(
                 RetryStrategy.always()
                     .withBackoffScheduler(scheduler)
-                    .boundedExponentialBackoff(Duration.ofMillis(100), 5)
+                    .boundedExponentialBackoff(Duration.ofMillis(100), Duration.ofMillis(3200))
                     .build())
             .test();
     test.assertNotTerminated().assertNoValues();

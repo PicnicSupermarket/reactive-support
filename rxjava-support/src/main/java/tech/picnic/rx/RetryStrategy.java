@@ -134,17 +134,17 @@ public final class RetryStrategy implements Function<Flowable<Throwable>, Flowab
     }
 
     /**
-     * Configures the use of a backoff delay which exponentially increases for the first few retry
-     * attempts and is fixed afterwards.
+     * Configures the use of an exponentially increasing backoff delay. The delay is
+     * bounded to the {@code maxBackoffDelay}.
      *
      * @param initialDelay the delay before the first retry
-     * @param backoffLimit the amount of retries used for the exponential backoff strategy before
-     *     moving to a fixed delay strategy
+     * @param maxBackoffDelay the maximum delay allowed for the backoff strategy.
      * @return this {@link RetryStrategy.Builder}; useful for method chaining
      */
-    public Builder boundedExponentialBackoff(Duration initialDelay, int backoffLimit) {
-      Flowable<Duration> exp = getExponentialDelays(initialDelay).limit(backoffLimit + 1);
-      return customBackoff(exp.skipLast(1).concatWith(exp.takeLast(1).repeat()));
+    public Builder boundedExponentialBackoff(Duration initialDelay, Duration maxBackoffDelay) {
+      return customBackoff(
+          getExponentialDelays(initialDelay)
+              .map(delay -> maxBackoffDelay.minus(delay).isNegative() ? maxBackoffDelay : delay));
     }
 
     private static Flowable<Duration> getExponentialDelays(Duration initialDelay) {
