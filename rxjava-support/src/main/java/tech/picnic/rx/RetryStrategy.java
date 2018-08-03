@@ -1,6 +1,8 @@
 package tech.picnic.rx;
 
 import static io.reactivex.internal.functions.Functions.identity;
+import static java.util.Arrays.asList;
+import static java.util.Collections.min;
 
 import com.google.common.math.LongMath;
 import io.reactivex.Flowable;
@@ -134,17 +136,15 @@ public final class RetryStrategy implements Function<Flowable<Throwable>, Flowab
     }
 
     /**
-     * Configures the use of an exponentially increasing backoff delay. The delay is
-     * bounded to the {@code maxBackoffDelay}.
+     * Configures the use of an exponentially increasing backoff delay up to a maximum.
      *
      * @param initialDelay the delay before the first retry
-     * @param maxBackoffDelay the maximum delay allowed for the backoff strategy.
+     * @param maxBackoffDelay the maximum delay between retries
      * @return this {@link RetryStrategy.Builder}; useful for method chaining
      */
     public Builder boundedExponentialBackoff(Duration initialDelay, Duration maxBackoffDelay) {
       return customBackoff(
-          getExponentialDelays(initialDelay)
-              .map(delay -> maxBackoffDelay.minus(delay).isNegative() ? maxBackoffDelay : delay));
+          getExponentialDelays(initialDelay).map(delay -> min(asList(delay, maxBackoffDelay))));
     }
 
     private static Flowable<Duration> getExponentialDelays(Duration initialDelay) {
