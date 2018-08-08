@@ -276,7 +276,7 @@
                 <plugin>
                     <groupId>io.takari</groupId>
                     <artifactId>maven</artifactId>
-                    <version>0.6.0</version>
+                    <version>0.6.1</version>
                     <configuration>
                         <maven>${version.maven}</maven>
                     </configuration>
