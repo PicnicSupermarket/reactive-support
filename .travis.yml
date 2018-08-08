@@ -21,9 +21,6 @@ matrix:
       # XXX: On JDK 10 Error Prone causes warnings to be emitted; see
       # https://github.com/google/error-prone/issues/860.
       script: ./mvnw install -Dverification.warn
-    - jdk: oraclejdk-ea
-      # XXX: Error Prone is not yet compatible with JDK 11.
-      script: ./mvnw install -Dverification.skip
     - jdk: openjdk-ea
       # XXX: Error Prone is not yet compatible with JDK 11.
       script: ./mvnw install -Dverification.skip
