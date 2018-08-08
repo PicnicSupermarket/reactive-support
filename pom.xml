@@ -76,7 +76,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.error-prone>2.3.1</version.error-prone>
         <version.guava-beta-checker>1.0</version.guava-beta-checker>
-        <version.javadoc>2.10.4</version.javadoc>
+        <version.javadoc>3.0.1</version.javadoc>
         <version.jdk>1.8</version.jdk>
         <version.maven>3.5.3</version.maven>
         <version.nullaway>0.6.3</version.nullaway>
