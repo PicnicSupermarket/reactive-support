@@ -75,7 +75,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.error-prone>2.3.1</version.error-prone>
-        <version.extra-enforcer-rules>1.0-beta-7</version.extra-enforcer-rules>
         <version.guava-beta-checker>1.0</version.guava-beta-checker>
         <version.javadoc>2.10.4</version.javadoc>
         <version.jdk>1.8</version.jdk>
@@ -157,11 +156,6 @@
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
                 <version>3.1.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>extra-enforcer-rules</artifactId>
-                <version>${version.extra-enforcer-rules}</version>
             </dependency>
             <dependency>
                 <groupId>org.hamcrest</groupId>
@@ -477,7 +471,7 @@
                         <dependency>
                             <groupId>org.codehaus.mojo</groupId>
                             <artifactId>extra-enforcer-rules</artifactId>
-                            <version>${version.extra-enforcer-rules}</version>
+                            <version>1.0-beta-9</version>
                         </dependency>
                     </dependencies>
                 </plugin>
