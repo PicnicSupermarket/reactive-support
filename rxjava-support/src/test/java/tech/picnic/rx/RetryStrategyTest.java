@@ -30,7 +30,7 @@ public final class RetryStrategyTest {
         .assertErrorMessage("Error #1");
   }
 
-  public void testExponentialBackoff() throws Exception {
+  public void testExponentialBackoff() {
     AtomicInteger retries = new AtomicInteger();
     TestScheduler scheduler = new TestScheduler();
     TestSubscriber<Integer> test =
@@ -55,7 +55,39 @@ public final class RetryStrategyTest {
     test.assertValue(11).assertComplete();
   }
 
-  public void testFixedBackoff() throws Exception {
+  public void testBoundedExponentialBackoff() {
+    AtomicInteger retries = new AtomicInteger();
+    TestScheduler scheduler = new TestScheduler();
+    TestSubscriber<Integer> test =
+        errorSource(10)
+            .doOnSubscribe(d -> retries.incrementAndGet())
+            .retryWhen(
+                RetryStrategy.always()
+                    .withBackoffScheduler(scheduler)
+                    .boundedExponentialBackoff(Duration.ofMillis(100), Duration.ofMillis(3200))
+                    .build())
+            .test();
+    test.assertNotTerminated().assertNoValues();
+    for (int i = 1, d = 100, t = 0; i <= 5; ++i, t += d, d *= 2) {
+      scheduler.advanceTimeTo(t, MILLISECONDS);
+      test.assertNotTerminated().assertNoValues();
+      assertEquals(retries.get(), i);
+      scheduler.advanceTimeBy(d - 1, MILLISECONDS);
+      test.assertNotTerminated().assertNoValues();
+      assertEquals(retries.get(), i);
+    }
+
+    for (int i = 6; i <= 10; i++) {
+      scheduler.advanceTimeBy(3200, MILLISECONDS);
+      test.assertNotTerminated().assertNoValues();
+      assertEquals(retries.get(), i);
+    }
+
+    scheduler.advanceTimeBy(1, MILLISECONDS);
+    test.assertValue(11).assertComplete();
+  }
+
+  public void testFixedBackoff() {
     TestScheduler scheduler = new TestScheduler();
     TestSubscriber<Integer> test =
         errorSource(10)
@@ -71,7 +103,7 @@ public final class RetryStrategyTest {
     test.assertValue(11).assertComplete();
   }
 
-  public void testCustomBackoff() throws Exception {
+  public void testCustomBackoff() {
     TestScheduler scheduler = new TestScheduler();
     TestSubscriber<Integer> test =
         errorSource(10)
