@@ -75,12 +75,12 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.error-prone>2.3.1</version.error-prone>
+        <version.error-prone-javac>9+181-r4173-1</version.error-prone-javac>
         <version.guava-beta-checker>1.0</version.guava-beta-checker>
         <version.javadoc>3.0.1</version.javadoc>
         <version.jdk>1.8</version.jdk>
         <version.maven>3.5.3</version.maven>
         <version.nullaway>0.6.3</version.nullaway>
-        <version.plexus-compiler>2.8.5</version.plexus-compiler>
         <version.surefire>2.22.0</version.surefire>
         <!-- Our build system (Travis CI) provides a monotonically increasing
         build number. When building locally, this number is obviously absent.
@@ -132,16 +132,27 @@
                 <artifactId>jsr305</artifactId>
                 <version>3.0.2</version>
             </dependency>
+            <!-- Specified as a workaround for
+            https://github.com/mojohaus/versions-maven-plugin/issues/244. -->
+            <dependency>
+                <groupId>com.google.errorprone</groupId>
+                <artifactId>error_prone_core</artifactId>
+                <version>${version.error-prone}</version>
+            </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>27.0-jre</version>
             </dependency>
+            <!-- Specified as a workaround for
+            https://github.com/mojohaus/versions-maven-plugin/issues/244. -->
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava-beta-checker</artifactId>
                 <version>${version.guava-beta-checker}</version>
             </dependency>
+            <!-- Specified as a workaround for
+            https://github.com/mojohaus/versions-maven-plugin/issues/244. -->
             <dependency>
                 <groupId>com.uber.nullaway</groupId>
                 <artifactId>nullaway</artifactId>
@@ -703,6 +714,34 @@
 
     <profiles>
         <profile>
+            <!-- When using JDK 8, Error Prone requires that the specific (JDK
+            9-based) version of `javac` it integrates against is on the boot
+            classpath. This custom Error Prone `javac` is resolved implicitly
+            as a dependency of `error_prone_core`; as such the path configured
+            below is guaranteed to exist by the time the classpath is
+            consulted. -->
+            <id>jdk8</id>
+            <activation>
+                <jdk>1.8</jdk>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-compiler-plugin</artifactId>
+                            <configuration>
+                                <fork>true</fork>
+                                <compilerArgs combine.children="append">
+                                    <arg>-J-Xbootclasspath/p:${settings.localRepository}/com/google/errorprone/javac/${version.error-prone-javac}/javac-${version.error-prone-javac}.jar</arg>
+                                </compilerArgs>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+        <profile>
             <!-- If explicitly enabled using `-Pcoverage` we use PIT to
             establish coverage through mutation testing. -->
             <id>coverage</id>
@@ -773,6 +812,11 @@
                         <configuration>
                             <annotationProcessorPaths combine.children="append">
                                 <path>
+                                    <groupId>com.google.errorprone</groupId>
+                                    <artifactId>error_prone_core</artifactId>
+                                    <version>${version.error-prone}</version>
+                                </path>
+                                <path>
                                     <groupId>com.google.guava</groupId>
                                     <artifactId>guava-beta-checker</artifactId>
                                     <version>${version.guava-beta-checker}</version>
@@ -787,52 +831,35 @@
                                 <!-- We enable nearly all doclint checks,
                                 except that we don't care about missing Javadoc
                                 on non-public classes and members. -->
-                                <arg>-Xdoclint:all</arg>
-                                <arg>-Xdoclint:missing/protected</arg>
+                                <arg>-Xdoclint:all,-missing/package</arg>
                                 <arg>-Xlint:all</arg>
-                                <!-- Not all annotations present on the
-                                classpath are handled by annotation processors,
-                                and javac complains about this. That doesn't
-                                make a lot of sense. From time to time we
-                                should review whether this issue has been
-                                resolved. -->
-                                <arg>-Xlint:-processing</arg>
-                                <!-- We want to enable almost all error-prone
-                                bug pattern checkers, so we enable all and then
-                                selectively deactivate some. -->
-                                <arg>-XepAllDisabledChecksAsWarnings</arg>
-                                <!-- See https://github.com/google/error-prone/issues/655. -->
-                                <arg>-Xep:ConstructorLeaksThis:OFF</arg>
-                                <!-- See https://github.com/google/error-prone/issues/708. -->
-                                <arg>-Xep:FieldMissingNullable:OFF</arg>
-                                <arg>-XepOpt:NullAway:AnnotatedPackages=tech.picnic</arg>
+                                <!-- Enable and configure Error Prone. -->
+                                <!-- XXX: The awkward comment formatting used
+                                here ensures that the plugin arguments are
+                                separated only by spaces. Once we drop support
+                                for JDK 8 we can clean this up; later versions
+                                do properly handle newline separators. See
+                                https://github.com/google/error-prone/pull/1115. -->
+                                <arg>
+                                    -Xplugin:ErrorProne <!--
+                                    We want to enable almost all Error
+                                    Prone bug pattern checkers, so we enable
+                                    all and then selectively deactivate some.
+                                    --> -XepAllDisabledChecksAsWarnings <!--
+                                    See https://github.com/google/error-prone/issues/708.
+                                    --> -Xep:FieldMissingNullable:OFF <!--
+                                    --> -XepOpt:NullAway:AnnotatedPackages=tech.picnic
+                                </arg>
+                                <!-- The Error Prone plugin makes certain
+                                assumptions about the state of the AST at the
+                                moment it is invoked. Those assumptions are met
+                                when using the `simple` compile policy. This
+                                flag may be dropped after resolution of
+                                https://bugs.openjdk.java.net/browse/JDK-8155674. -->
+                                <arg>-XDcompilePolicy=simple</arg>
                             </compilerArgs>
-                            <compilerId>javac-with-errorprone</compilerId>
-                            <forceJavacCompilerUse>true</forceJavacCompilerUse>
                             <showWarnings>true</showWarnings>
                         </configuration>
-                        <dependencies>
-                            <dependency>
-                                <groupId>com.google.errorprone</groupId>
-                                <artifactId>error_prone_core</artifactId>
-                                <version>${version.error-prone}</version>
-                            </dependency>
-                            <dependency>
-                                <groupId>org.codehaus.plexus</groupId>
-                                <artifactId>plexus-compiler-api</artifactId>
-                                <version>${version.plexus-compiler}</version>
-                            </dependency>
-                            <dependency>
-                                <groupId>org.codehaus.plexus</groupId>
-                                <artifactId>plexus-compiler-javac</artifactId>
-                                <version>${version.plexus-compiler}</version>
-                            </dependency>
-                            <dependency>
-                                <groupId>org.codehaus.plexus</groupId>
-                                <artifactId>plexus-compiler-javac-errorprone</artifactId>
-                                <version>${version.plexus-compiler}</version>
-                            </dependency>
-                        </dependencies>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -899,6 +926,13 @@
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-compiler-plugin</artifactId>
                             <configuration>
+                                <compilerArgs combine.children="append">
+                                    <!-- When using a JDK other than the one
+                                    specified using `-source`, `javac` warns
+                                    that the bootstrap classpath will not be
+                                    set. We don't want to fail on that warning. -->
+                                    <arg>-Xlint:-options</arg>
+                                </compilerArgs>
                                 <failOnWarning>true</failOnWarning>
                             </configuration>
                         </plugin>
