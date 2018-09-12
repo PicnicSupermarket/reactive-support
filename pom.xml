@@ -79,7 +79,7 @@
         <version.guava-beta-checker>1.0</version.guava-beta-checker>
         <version.javadoc>3.0.1</version.javadoc>
         <version.jdk>1.8</version.jdk>
-        <version.junit-jupiter>5.2.0</version.junit-jupiter>
+        <version.junit>5.3.1</version.junit>
         <version.maven>3.5.3</version.maven>
         <version.nullaway>0.6.3</version.nullaway>
         <version.surefire>2.22.0</version.surefire>
@@ -177,7 +177,7 @@
             <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
-                <version>${version.junit-jupiter}</version>
+                <version>${version.junit}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -587,18 +587,6 @@
                         <threadCount>2</threadCount>
                         <trimStackTrace>false</trimStackTrace>
                     </configuration>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.junit.jupiter</groupId>
-                            <artifactId>junit-jupiter-engine</artifactId>
-                            <version>${version.junit-jupiter}</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>org.junit.platform</groupId>
-                            <artifactId>junit-platform-surefire-provider</artifactId>
-                            <version>1.2.0</version>
-                        </dependency>
-                    </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
