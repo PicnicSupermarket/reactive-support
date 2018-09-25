@@ -89,15 +89,11 @@ public final class RxSpring4Util {
 
   private static <T> Function<Maybe<T>, DeferredResult<T>> maybeToDeferredResult(
       DeferredResult<T> deferredResult) {
-    return single -> {
-      deferredResult.onTimeout(
-          single.subscribe(
-                  deferredResult::setResult,
-                  deferredResult::setErrorResult,
-                  () -> deferredResult.setResult(null))
-              ::dispose);
-      return deferredResult;
-    };
+    return maybe ->
+        singleToDeferredResult(deferredResult)
+            .apply(
+                maybe.switchIfEmpty(
+                    Single.defer(() -> Single.error(new ResourceNotFoundException()))));
   }
 
   /**
