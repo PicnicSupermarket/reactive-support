@@ -71,7 +71,9 @@ public final class RxSpring4UtilTest {
   }
 
   public void testMaybeToDeferredResult() throws Exception {
-    assertNull(mockMvc.perform(get("/maybeToDeferredResult")).andReturn().getAsyncResult());
+    mockMvc
+        .perform(get("/maybeToDeferredResult"))
+        .andExpect(request().asyncResult(instanceOf(ResourceNotFoundException.class)));
     mockMvc
         .perform(get("/maybeToDeferredResult?value=foo"))
         .andExpect(request().asyncResult("foo"));
