@@ -51,7 +51,7 @@ import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @TestInstance(Lifecycle.PER_CLASS)
-public final class RxSpring4UtilTest {
+final class RxSpring4UtilTest {
   private final TestScheduler testScheduler = new TestScheduler();
 
   @SuppressWarnings("NullAway")
@@ -69,20 +69,20 @@ public final class RxSpring4UtilTest {
   }
 
   @Test
-  public void testSingleToDeferredResult() throws Exception {
+  void testSingleToDeferredResult() throws Exception {
     verifyAsyncGetRequest("/singleToDeferredResult?value=foo", OK, "foo");
     verifyAsyncGetRequest("/singleToDeferredResult?value=error", BAD_REQUEST, "");
   }
 
   @Test
-  public void testMaybeToDeferredResult() throws Exception {
+  void testMaybeToDeferredResult() throws Exception {
     verifyAsyncGetRequest("/maybeToDeferredResult", NOT_FOUND, "");
     verifyAsyncGetRequest("/maybeToDeferredResult?value=foo", OK, "foo");
     verifyAsyncGetRequest("/maybeToDeferredResult?value=error", BAD_REQUEST, "");
   }
 
   @Test
-  public void testObservableToDeferredResult() throws Exception {
+  void testObservableToDeferredResult() throws Exception {
     verifyAsyncGetRequest("/observableToDeferredResult?value=foo", OK, "[\"foo\"]");
     verifyAsyncGetRequest(
         "/observableToDeferredResult?value=bar&repeat=2", OK, "[\"bar\",\"bar\"]");
@@ -91,7 +91,7 @@ public final class RxSpring4UtilTest {
   }
 
   @Test
-  public void testPublisherToDeferredResult() throws Exception {
+  void testPublisherToDeferredResult() throws Exception {
     verifyAsyncGetRequest("/publisherToDeferredResult?value=foo", OK, "[\"foo\"]");
     verifyAsyncGetRequest("/publisherToDeferredResult?value=bar&repeat=2", OK, "[\"bar\",\"bar\"]");
     verifyAsyncGetRequest("/publisherToDeferredResult?value=baz&repeat=0", OK, "[]");
@@ -99,13 +99,13 @@ public final class RxSpring4UtilTest {
   }
 
   @Test
-  public void testCompletableToDeferredResult() throws Exception {
+  void testCompletableToDeferredResult() throws Exception {
     verifyAsyncGetRequest("/completableToDeferredResult?fail=false", OK, "");
     verifyAsyncGetRequest("/completableToDeferredResult?fail=true", BAD_REQUEST, "");
   }
 
   @Test
-  public void testObservableToSse() throws Exception {
+  void testObservableToSse() throws Exception {
     verifySyncGetRequest("/observableToSse?value=foo", OK, "data:foo\n\n");
     verifySyncGetRequest("/observableToSse?value=bar&repeat=2", OK, "data:bar\n\ndata:bar\n\n");
     verifySyncGetRequest("/observableToSse?value=baz&repeat=0", OK, "");
@@ -113,7 +113,7 @@ public final class RxSpring4UtilTest {
   }
 
   @Test
-  public void testPublisherToSse() throws Exception {
+  void testPublisherToSse() throws Exception {
     verifySyncGetRequest("/publisherToSse?value=foo", OK, "data:foo\n\n");
     verifySyncGetRequest("/publisherToSse?value=bar&repeat=2", OK, "data:bar\n\ndata:bar\n\n");
     verifySyncGetRequest("/publisherToSse?value=baz&repeat=0", OK, "");
@@ -121,7 +121,7 @@ public final class RxSpring4UtilTest {
   }
 
   @Test
-  public void testPublisherToSseWithKeepAlive() throws Exception {
+  void testPublisherToSseWithKeepAlive() throws Exception {
     testScheduler.advanceTimeTo(0, MILLISECONDS);
     MockHttpServletResponse response =
         doGet("/publisherToSse/with-keep-alive?value=foo&repeat=2&interval=250")
@@ -157,7 +157,7 @@ public final class RxSpring4UtilTest {
   }
 
   @Test
-  public void testPublisherToSseWithKeepAliveAndError() throws Exception {
+  void testPublisherToSseWithKeepAliveAndError() throws Exception {
     testScheduler.advanceTimeTo(0, MILLISECONDS);
     MockHttpServletResponse response =
         doGet("/publisherToSse/with-keep-alive?value=error&repeat=1&interval=150")
@@ -172,7 +172,7 @@ public final class RxSpring4UtilTest {
   }
 
   @Test
-  public void testPublisherToSseWithComplexObject() throws Exception {
+  void testPublisherToSseWithComplexObject() throws Exception {
     verifySyncGetRequest(
         "/publisherToSse/with-complex-object?repeat=2",
         OK,

@@ -10,9 +10,9 @@ import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 
-public final class RetryStrategyTest {
+final class RetryStrategyTest {
   @Test
-  public void testOnlyIf() throws Exception {
+  void testOnlyIf() throws Exception {
     errorSource(2)
         .retryWhen(
             RetryStrategy.onlyIf(
@@ -31,7 +31,7 @@ public final class RetryStrategyTest {
   }
 
   @Test
-  public void testExponentialBackoff() {
+  void testExponentialBackoff() {
     AtomicInteger retries = new AtomicInteger();
     TestScheduler scheduler = new TestScheduler();
     TestSubscriber<Integer> test =
@@ -57,7 +57,7 @@ public final class RetryStrategyTest {
   }
 
   @Test
-  public void testBoundedExponentialBackoff() {
+  void testBoundedExponentialBackoff() {
     AtomicInteger retries = new AtomicInteger();
     TestScheduler scheduler = new TestScheduler();
     TestSubscriber<Integer> test =
@@ -90,7 +90,7 @@ public final class RetryStrategyTest {
   }
 
   @Test
-  public void testFixedBackoff() {
+  void testFixedBackoff() {
     TestScheduler scheduler = new TestScheduler();
     TestSubscriber<Integer> test =
         errorSource(10)
@@ -107,7 +107,7 @@ public final class RetryStrategyTest {
   }
 
   @Test
-  public void testCustomBackoff() {
+  void testCustomBackoff() {
     TestScheduler scheduler = new TestScheduler();
     TestSubscriber<Integer> test =
         errorSource(10)
@@ -124,7 +124,7 @@ public final class RetryStrategyTest {
   }
 
   @Test
-  public void testTimes() throws Exception {
+  void testTimes() throws Exception {
     errorSource(10)
         .retryWhen(RetryStrategy.always().times(5).build())
         .test()

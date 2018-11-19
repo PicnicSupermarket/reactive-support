@@ -21,7 +21,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public final class PicnicRxPluginsTest {
+final class PicnicRxPluginsTest {
   private final ConcurrentMap<Context, AtomicInteger> verificationCounters =
       new ConcurrentHashMap<>();
 
@@ -36,7 +36,7 @@ public final class PicnicRxPluginsTest {
   }
 
   @Test
-  public void testPropagate() {
+  void testPropagate() {
     Observable<Integer> obs = Observable.just(1, 2, 3);
 
     // Without context propagation
@@ -59,7 +59,7 @@ public final class PicnicRxPluginsTest {
   }
 
   @Test
-  public void testObserveOnAnotherScheduler() {
+  void testObserveOnAnotherScheduler() {
     Observable<Integer> obs = Observable.just(1, 2, 3);
 
     Context ctx = Context.createRandom().applyToCurrentThread();
@@ -73,7 +73,7 @@ public final class PicnicRxPluginsTest {
   }
 
   @Test
-  public void testPropagateOnMultipleSchedulers() {
+  void testPropagateOnMultipleSchedulers() {
     Observable<Integer> obs = Observable.just(1, 2, 3);
 
     Context ctx = Context.createRandom().applyToCurrentThread();
@@ -87,7 +87,7 @@ public final class PicnicRxPluginsTest {
   }
 
   @Test
-  public void testNotLeaking() throws InterruptedException {
+  void testNotLeaking() throws InterruptedException {
     Observable<Integer> obs = Observable.just(1, 2, 3);
     Scheduler singleScheduler = Schedulers.single();
 
@@ -127,7 +127,7 @@ public final class PicnicRxPluginsTest {
   }
 
   @Test
-  public void testContextSwitchBeforeConsumption() {
+  void testContextSwitchBeforeConsumption() {
     Observable<Integer> obs = Observable.just(1, 2, 3);
 
     // Context is propagated on scheduling, not on observable creation.
@@ -140,7 +140,7 @@ public final class PicnicRxPluginsTest {
   }
 
   @Test
-  public void testPropagationOnSameThread() {
+  void testPropagationOnSameThread() {
     Observable<Integer> obs = Observable.just(1, 2, 3);
 
     Context ctx = Context.createRandom().applyToCurrentThread();
@@ -153,7 +153,7 @@ public final class PicnicRxPluginsTest {
   }
 
   @Test
-  public void testEmptyContextIsPropagated() {
+  void testEmptyContextIsPropagated() {
     Observable<Integer> obs = Observable.just(1, 2, 3);
 
     ExecutorService es = Executors.newSingleThreadExecutor();
@@ -173,7 +173,7 @@ public final class PicnicRxPluginsTest {
   }
 
   @Test
-  public void testTestSchedulerContextPropagation() throws InterruptedException {
+  void testTestSchedulerContextPropagation() throws InterruptedException {
     Context ctx = Context.createRandom().applyToCurrentThread();
 
     TestScheduler testScheduler = new TestScheduler();
@@ -190,7 +190,7 @@ public final class PicnicRxPluginsTest {
   }
 
   @Test
-  public void testDirectExecutor() {
+  void testDirectExecutor() {
     Context ctx = Context.createRandom().applyToCurrentThread();
 
     TestScheduler io = new TestScheduler();
