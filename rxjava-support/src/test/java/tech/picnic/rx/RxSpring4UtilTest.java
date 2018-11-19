@@ -303,7 +303,7 @@ public final class RxSpring4UtilTest {
             };
         }
 
-        @ResponseStatus(code = BAD_REQUEST)
+        @ResponseStatus(BAD_REQUEST)
         static final class BadRequestException extends RuntimeException {
             /** The {@link java.io.Serializable serialization} ID. */
             private static final long serialVersionUID = 1L;
