@@ -9,19 +9,7 @@ matrix:
         - ./mvnw jacoco:prepare-agent surefire:test jacoco:report coveralls:report sonar:sonar
     - jdk: openjdk8
       script: ./mvnw install
-    - jdk: oraclejdk9
-      script: ./mvnw install
-    - jdk: openjdk9
-      script: ./mvnw install
-    - jdk: oraclejdk10
-      # XXX: On JDK 10 Error Prone causes warnings to be emitted; see
-      # https://github.com/google/error-prone/issues/860.
-      script: ./mvnw install -Dverification.warn
-    - jdk: openjdk10
-      # XXX: On JDK 10 Error Prone causes warnings to be emitted; see
-      # https://github.com/google/error-prone/issues/860.
-      script: ./mvnw install -Dverification.warn
-    - jdk: openjdk-ea
+    - jdk: openjdk11
       # XXX: Error Prone is not yet compatible with JDK 11.
       script: ./mvnw install -Dverification.skip
 addons:
