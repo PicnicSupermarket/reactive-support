@@ -6,7 +6,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 import io.reactivex.observers.TestObserver;
-import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.schedulers.TestScheduler;
 import java.util.Optional;
@@ -20,7 +19,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
+@Execution(ExecutionMode.SAME_THREAD)
 final class PicnicRxPluginsTest {
   private final ConcurrentMap<Context, AtomicInteger> verificationCounters =
       new ConcurrentHashMap<>();
@@ -40,8 +42,8 @@ final class PicnicRxPluginsTest {
     Observable<Integer> obs = Observable.just(1, 2, 3);
 
     // Without context propagation
+    tearDown();
     Context ctx1 = Context.createRandom().applyToCurrentThread();
-    RxJavaPlugins.setScheduleHandler(null);
     Context ctx2 = Context.createEmpty();
     obs.subscribeOn(Schedulers.io())
         .doOnNext(i -> verifyActive(ctx2))
