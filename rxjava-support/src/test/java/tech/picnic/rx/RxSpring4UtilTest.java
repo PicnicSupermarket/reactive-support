@@ -1,12 +1,15 @@
 package tech.picnic.rx;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
 import static tech.picnic.rx.RxSpring4Util.completableToDeferredResult;
 import static tech.picnic.rx.RxSpring4Util.maybeToDeferredResult;
 import static tech.picnic.rx.RxSpring4Util.observableToDeferredResult;
@@ -27,15 +30,18 @@ import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -53,7 +59,6 @@ public final class RxSpring4UtilTest {
   public void setup() {
     mockMvc =
         MockMvcBuilders.standaloneSetup(new TestController(testScheduler))
-            .alwaysExpect(request().asyncStarted())
             .setMessageConverters(
                 new StringHttpMessageConverter(),
                 new MappingJackson2HttpMessageConverter(),
@@ -62,92 +67,54 @@ public final class RxSpring4UtilTest {
   }
 
   public void testSingleToDeferredResult() throws Exception {
-    mockMvc
-        .perform(get("/singleToDeferredResult?value=foo"))
-        .andExpect(request().asyncResult("foo"));
-    mockMvc
-        .perform(get("/singleToDeferredResult?value=error"))
-        .andExpect(request().asyncResult(instanceOf(IllegalArgumentException.class)));
+    verifyAsyncGetRequest("/singleToDeferredResult?value=foo", OK, "foo");
+    verifyAsyncGetRequest("/singleToDeferredResult?value=error", BAD_REQUEST, "");
   }
 
   public void testMaybeToDeferredResult() throws Exception {
-    assertNull(mockMvc.perform(get("/maybeToDeferredResult")).andReturn().getAsyncResult());
-    mockMvc
-        .perform(get("/maybeToDeferredResult?value=foo"))
-        .andExpect(request().asyncResult("foo"));
-    mockMvc
-        .perform(get("/maybeToDeferredResult?value=error"))
-        .andExpect(request().asyncResult(instanceOf(IllegalArgumentException.class)));
+    verifyAsyncGetRequest("/maybeToDeferredResult", NOT_FOUND, "");
+    verifyAsyncGetRequest("/maybeToDeferredResult?value=foo", OK, "foo");
+    verifyAsyncGetRequest("/maybeToDeferredResult?value=error", BAD_REQUEST, "");
   }
 
   public void testObservableToDeferredResult() throws Exception {
-    mockMvc
-        .perform(get("/observableToDeferredResult?value=foo"))
-        .andExpect(request().asyncResult(ImmutableList.of("foo")));
-    mockMvc
-        .perform(get("/observableToDeferredResult?value=bar&repeat=2"))
-        .andExpect(request().asyncResult(ImmutableList.of("bar", "bar")));
-    mockMvc
-        .perform(get("/observableToDeferredResult?value=baz&repeat=0"))
-        .andExpect(request().asyncResult(ImmutableList.of()));
-    mockMvc
-        .perform(get("/observableToDeferredResult?value=error"))
-        .andExpect(request().asyncResult(instanceOf(IllegalArgumentException.class)));
+    verifyAsyncGetRequest("/observableToDeferredResult?value=foo", OK, "[\"foo\"]");
+    verifyAsyncGetRequest(
+        "/observableToDeferredResult?value=bar&repeat=2", OK, "[\"bar\",\"bar\"]");
+    verifyAsyncGetRequest("/observableToDeferredResult?value=baz&repeat=0", OK, "[]");
+    verifyAsyncGetRequest("/observableToDeferredResult?value=error", BAD_REQUEST, "");
   }
 
   public void testPublisherToDeferredResult() throws Exception {
-    mockMvc
-        .perform(get("/publisherToDeferredResult?value=foo"))
-        .andExpect(request().asyncResult(ImmutableList.of("foo")));
-    mockMvc
-        .perform(get("/publisherToDeferredResult?value=bar&repeat=2"))
-        .andExpect(request().asyncResult(ImmutableList.of("bar", "bar")));
-    mockMvc
-        .perform(get("/publisherToDeferredResult?value=baz&repeat=0"))
-        .andExpect(request().asyncResult(ImmutableList.of()));
-    mockMvc
-        .perform(get("/publisherToDeferredResult?value=error"))
-        .andExpect(request().asyncResult(instanceOf(IllegalArgumentException.class)));
+    verifyAsyncGetRequest("/publisherToDeferredResult?value=foo", OK, "[\"foo\"]");
+    verifyAsyncGetRequest("/publisherToDeferredResult?value=bar&repeat=2", OK, "[\"bar\",\"bar\"]");
+    verifyAsyncGetRequest("/publisherToDeferredResult?value=baz&repeat=0", OK, "[]");
+    verifyAsyncGetRequest("/publisherToDeferredResult?value=error", BAD_REQUEST, "");
   }
 
   public void testCompletableToDeferredResult() throws Exception {
-    assertNull(
-        mockMvc
-            .perform(get("/completableToDeferredResult?fail=false"))
-            .andReturn()
-            .getAsyncResult());
-    mockMvc
-        .perform(get("/completableToDeferredResult?fail=true"))
-        .andExpect(request().asyncResult(instanceOf(IllegalArgumentException.class)));
+    verifyAsyncGetRequest("/completableToDeferredResult?fail=false", OK, "");
+    verifyAsyncGetRequest("/completableToDeferredResult?fail=true", BAD_REQUEST, "");
   }
 
   public void testObservableToSse() throws Exception {
-    mockMvc.perform(get("/observableToSse?value=foo")).andExpect(content().string("data:foo\n\n"));
-    mockMvc
-        .perform(get("/observableToSse?value=bar&repeat=2"))
-        .andExpect(content().string("data:bar\n\ndata:bar\n\n"));
-    mockMvc.perform(get("/observableToSse?value=baz&repeat=0")).andExpect(content().string(""));
-    mockMvc
-        .perform(get("/observableToSse?value=error"))
-        .andExpect(request().asyncResult(instanceOf(IllegalArgumentException.class)));
+    verifySyncGetRequest("/observableToSse?value=foo", OK, "data:foo\n\n");
+    verifySyncGetRequest("/observableToSse?value=bar&repeat=2", OK, "data:bar\n\ndata:bar\n\n");
+    verifySyncGetRequest("/observableToSse?value=baz&repeat=0", OK, "");
+    verifyAsyncGetRequest("/observableToSse?value=error", BAD_REQUEST, "");
   }
 
   public void testPublisherToSse() throws Exception {
-    mockMvc.perform(get("/publisherToSse?value=foo")).andExpect(content().string("data:foo\n\n"));
-    mockMvc
-        .perform(get("/publisherToSse?value=bar&repeat=2"))
-        .andExpect(content().string("data:bar\n\ndata:bar\n\n"));
-    mockMvc.perform(get("/publisherToSse?value=baz&repeat=0")).andExpect(content().string(""));
-    mockMvc
-        .perform(get("/publisherToSse?value=error"))
-        .andExpect(request().asyncResult(instanceOf(IllegalArgumentException.class)));
+    verifySyncGetRequest("/publisherToSse?value=foo", OK, "data:foo\n\n");
+    verifySyncGetRequest("/publisherToSse?value=bar&repeat=2", OK, "data:bar\n\ndata:bar\n\n");
+    verifySyncGetRequest("/publisherToSse?value=baz&repeat=0", OK, "");
+    verifyAsyncGetRequest("/publisherToSse?value=error", BAD_REQUEST, "");
   }
 
   public void testPublisherToSseWithKeepAlive() throws Exception {
     testScheduler.advanceTimeTo(0, MILLISECONDS);
     MockHttpServletResponse response =
-        mockMvc
-            .perform(get("/publisherToSse/with-keep-alive?value=foo&repeat=2&interval=250"))
+        doGet("/publisherToSse/with-keep-alive?value=foo&repeat=2&interval=250")
             .andReturn()
             .getResponse();
     testScheduler.advanceTimeTo(99, TimeUnit.MILLISECONDS);
@@ -182,8 +149,7 @@ public final class RxSpring4UtilTest {
   public void testPublisherToSseWithKeepAliveAndError() throws Exception {
     testScheduler.advanceTimeTo(0, MILLISECONDS);
     MockHttpServletResponse response =
-        mockMvc
-            .perform(get("/publisherToSse/with-keep-alive?value=error&repeat=1&interval=150"))
+        doGet("/publisherToSse/with-keep-alive?value=error&repeat=1&interval=150")
             .andReturn()
             .getResponse();
     testScheduler.advanceTimeTo(149, TimeUnit.MILLISECONDS);
@@ -195,22 +161,35 @@ public final class RxSpring4UtilTest {
   }
 
   public void testPublisherToSseWithComplexObject() throws Exception {
+    verifySyncGetRequest(
+        "/publisherToSse/with-complex-object?repeat=2",
+        OK,
+        "" + "data:{\"name\":\"foo\",\"age\":0}\n\n" + "data:{\"name\":\"foo\",\"age\":1}\n\n");
+    verifySyncGetRequest(
+        "/publisherToSse/with-complex-object?mediaType=application/xml&repeat=2",
+        OK,
+        ""
+            + "data:<Person><name>foo</name><age>0</age></Person>\n\n"
+            + "data:<Person><name>foo</name><age>1</age></Person>\n\n");
+  }
+
+  private void verifySyncGetRequest(
+      String request, HttpStatus expectedStatus, String expectedContent) throws Exception {
+    doGet(request)
+        .andExpect(status().is(expectedStatus.value()))
+        .andExpect(content().string(expectedContent));
+  }
+
+  private void verifyAsyncGetRequest(
+      String request, HttpStatus expectedStatus, String expectedContent) throws Exception {
     mockMvc
-        .perform(get("/publisherToSse/with-complex-object?repeat=2"))
-        .andExpect(
-            content()
-                .string(
-                    ""
-                        + "data:{\"name\":\"foo\",\"age\":0}\n\n"
-                        + "data:{\"name\":\"foo\",\"age\":1}\n\n"));
-    mockMvc
-        .perform(get("/publisherToSse/with-complex-object?mediaType=application/xml&repeat=2"))
-        .andExpect(
-            content()
-                .string(
-                    ""
-                        + "data:<Person><name>foo</name><age>0</age></Person>\n\n"
-                        + "data:<Person><name>foo</name><age>1</age></Person>\n\n"));
+        .perform(asyncDispatch(doGet(request).andReturn()))
+        .andExpect(status().is(expectedStatus.value()))
+        .andExpect(content().string(expectedContent));
+  }
+
+  private ResultActions doGet(String request) throws Exception {
+    return mockMvc.perform(get(request)).andExpect(request().asyncStarted());
   }
 
   static class Person {
@@ -268,10 +247,7 @@ public final class RxSpring4UtilTest {
 
     @GetMapping("/completableToDeferredResult")
     public DeferredResult<Void> withPublisherToDeferredResult(@RequestParam boolean fail) {
-      return Completable.defer(
-              () ->
-                  fail ? Completable.error(new IllegalArgumentException()) : Completable.complete())
-          .to(completableToDeferredResult());
+      return Completable.fromCallable(defer(fail, Boolean.TRUE)).to(completableToDeferredResult());
     }
 
     @GetMapping("/observableToSse")
@@ -310,11 +286,17 @@ public final class RxSpring4UtilTest {
     private static <T> Callable<T> defer(T value, T errorValue) {
       return () -> {
         if (errorValue.equals(value)) {
-          throw new IllegalArgumentException("Error!");
+          throw new BadRequestException();
         }
 
         return value;
       };
+    }
+
+    @ResponseStatus(BAD_REQUEST)
+    static final class BadRequestException extends RuntimeException {
+      /** The {@link java.io.Serializable serialization} ID. */
+      private static final long serialVersionUID = 1L;
     }
   }
 }
