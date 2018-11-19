@@ -626,7 +626,7 @@
                     <groupId>org.eluder.coveralls</groupId>
                     <artifactId>coveralls-maven-plugin</artifactId>
                     <version>4.3.0</version>
-                    <!-- XXX: This dependency declaration ensures JDK 9
+                    <!-- XXX: This dependency declaration ensures JDK 9+
                     compatibility. Drop it once
                     https://github.com/trautonen/coveralls-maven-plugin/issues/112
                     has been resolved and released. -->
