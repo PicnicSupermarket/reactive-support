@@ -1,6 +1,7 @@
 package tech.picnic.rx;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
@@ -9,7 +10,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.testng.Assert.assertEquals;
 import static tech.picnic.rx.RxSpring4Util.completableToDeferredResult;
 import static tech.picnic.rx.RxSpring4Util.maybeToDeferredResult;
 import static tech.picnic.rx.RxSpring4Util.observableToDeferredResult;
@@ -30,6 +30,10 @@ import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -45,18 +49,16 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
-@Test(singleThreaded = true)
-public final class RxSpring4UtilTest {
+@TestInstance(Lifecycle.PER_CLASS)
+final class RxSpring4UtilTest {
   private final TestScheduler testScheduler = new TestScheduler();
 
   @SuppressWarnings("NullAway")
   private MockMvc mockMvc;
 
-  @BeforeMethod
-  public void setup() {
+  @BeforeAll
+  void setUp() {
     mockMvc =
         MockMvcBuilders.standaloneSetup(new TestController(testScheduler))
             .setMessageConverters(
@@ -66,18 +68,21 @@ public final class RxSpring4UtilTest {
             .build();
   }
 
-  public void testSingleToDeferredResult() throws Exception {
+  @Test
+  void testSingleToDeferredResult() throws Exception {
     verifyAsyncGetRequest("/singleToDeferredResult?value=foo", OK, "foo");
     verifyAsyncGetRequest("/singleToDeferredResult?value=error", BAD_REQUEST, "");
   }
 
-  public void testMaybeToDeferredResult() throws Exception {
+  @Test
+  void testMaybeToDeferredResult() throws Exception {
     verifyAsyncGetRequest("/maybeToDeferredResult", NOT_FOUND, "");
     verifyAsyncGetRequest("/maybeToDeferredResult?value=foo", OK, "foo");
     verifyAsyncGetRequest("/maybeToDeferredResult?value=error", BAD_REQUEST, "");
   }
 
-  public void testObservableToDeferredResult() throws Exception {
+  @Test
+  void testObservableToDeferredResult() throws Exception {
     verifyAsyncGetRequest("/observableToDeferredResult?value=foo", OK, "[\"foo\"]");
     verifyAsyncGetRequest(
         "/observableToDeferredResult?value=bar&repeat=2", OK, "[\"bar\",\"bar\"]");
@@ -85,82 +90,89 @@ public final class RxSpring4UtilTest {
     verifyAsyncGetRequest("/observableToDeferredResult?value=error", BAD_REQUEST, "");
   }
 
-  public void testPublisherToDeferredResult() throws Exception {
+  @Test
+  void testPublisherToDeferredResult() throws Exception {
     verifyAsyncGetRequest("/publisherToDeferredResult?value=foo", OK, "[\"foo\"]");
     verifyAsyncGetRequest("/publisherToDeferredResult?value=bar&repeat=2", OK, "[\"bar\",\"bar\"]");
     verifyAsyncGetRequest("/publisherToDeferredResult?value=baz&repeat=0", OK, "[]");
     verifyAsyncGetRequest("/publisherToDeferredResult?value=error", BAD_REQUEST, "");
   }
 
-  public void testCompletableToDeferredResult() throws Exception {
+  @Test
+  void testCompletableToDeferredResult() throws Exception {
     verifyAsyncGetRequest("/completableToDeferredResult?fail=false", OK, "");
     verifyAsyncGetRequest("/completableToDeferredResult?fail=true", BAD_REQUEST, "");
   }
 
-  public void testObservableToSse() throws Exception {
+  @Test
+  void testObservableToSse() throws Exception {
     verifySyncGetRequest("/observableToSse?value=foo", OK, "data:foo\n\n");
     verifySyncGetRequest("/observableToSse?value=bar&repeat=2", OK, "data:bar\n\ndata:bar\n\n");
     verifySyncGetRequest("/observableToSse?value=baz&repeat=0", OK, "");
     verifyAsyncGetRequest("/observableToSse?value=error", BAD_REQUEST, "");
   }
 
-  public void testPublisherToSse() throws Exception {
+  @Test
+  void testPublisherToSse() throws Exception {
     verifySyncGetRequest("/publisherToSse?value=foo", OK, "data:foo\n\n");
     verifySyncGetRequest("/publisherToSse?value=bar&repeat=2", OK, "data:bar\n\ndata:bar\n\n");
     verifySyncGetRequest("/publisherToSse?value=baz&repeat=0", OK, "");
     verifyAsyncGetRequest("/publisherToSse?value=error", BAD_REQUEST, "");
   }
 
-  public void testPublisherToSseWithKeepAlive() throws Exception {
+  @Test
+  void testPublisherToSseWithKeepAlive() throws Exception {
     testScheduler.advanceTimeTo(0, MILLISECONDS);
     MockHttpServletResponse response =
         doGet("/publisherToSse/with-keep-alive?value=foo&repeat=2&interval=250")
             .andReturn()
             .getResponse();
     testScheduler.advanceTimeTo(99, TimeUnit.MILLISECONDS);
-    assertEquals(response.getContentAsString(), "");
+    assertEquals("", response.getContentAsString());
     testScheduler.advanceTimeTo(249, TimeUnit.MILLISECONDS);
     assertEquals(
-        response.getContentAsString(), "data:keep-alive #0\n\n" + "data:keep-alive #1\n\n");
+        "data:keep-alive #0\n\n" + "data:keep-alive #1\n\n", response.getContentAsString());
     testScheduler.advanceTimeTo(250, TimeUnit.MILLISECONDS);
     assertEquals(
-        response.getContentAsString(),
-        "data:keep-alive #0\n\n" + "data:keep-alive #1\n\n" + "data:foo\n\n");
+        "data:keep-alive #0\n\n" + "data:keep-alive #1\n\n" + "data:foo\n\n",
+        response.getContentAsString());
     testScheduler.advanceTimeTo(300, TimeUnit.MILLISECONDS);
     assertEquals(
-        response.getContentAsString(),
         ""
             + "data:keep-alive #0\n\n"
             + "data:keep-alive #1\n\n"
             + "data:foo\n\n"
-            + "data:keep-alive #2\n\n");
+            + "data:keep-alive #2\n\n",
+        response.getContentAsString());
     testScheduler.advanceTimeTo(1000, TimeUnit.MILLISECONDS);
     assertEquals(
-        response.getContentAsString(),
         ""
             + "data:keep-alive #0\n\n"
             + "data:keep-alive #1\n\n"
             + "data:foo\n\n"
             + "data:keep-alive #2\n\n"
             + "data:keep-alive #3\n\n"
-            + "data:foo\n\n");
+            + "data:foo\n\n",
+        response.getContentAsString());
   }
 
-  public void testPublisherToSseWithKeepAliveAndError() throws Exception {
+  @Test
+  void testPublisherToSseWithKeepAliveAndError() throws Exception {
     testScheduler.advanceTimeTo(0, MILLISECONDS);
     MockHttpServletResponse response =
         doGet("/publisherToSse/with-keep-alive?value=error&repeat=1&interval=150")
             .andReturn()
             .getResponse();
     testScheduler.advanceTimeTo(149, TimeUnit.MILLISECONDS);
-    assertEquals(response.getContentAsString(), "data:keep-alive #0\n\n");
+    assertEquals("data:keep-alive #0\n\n", response.getContentAsString());
     testScheduler.advanceTimeTo(200, TimeUnit.MILLISECONDS);
-    assertEquals(response.getContentAsString(), "data:keep-alive #0\n\n");
+    assertEquals("data:keep-alive #0\n\n", response.getContentAsString());
 
     // XXX: An error prevents further emissions, but there is no other evidence of it in the output.
   }
 
-  public void testPublisherToSseWithComplexObject() throws Exception {
+  @Test
+  void testPublisherToSseWithComplexObject() throws Exception {
     verifySyncGetRequest(
         "/publisherToSse/with-complex-object?repeat=2",
         OK,

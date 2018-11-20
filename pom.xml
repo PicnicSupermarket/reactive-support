@@ -174,6 +174,13 @@
                 <version>2.0.0.0</version>
             </dependency>
             <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>5.3.1</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
                 <version>2.23.0</version>
@@ -199,11 +206,6 @@
                 <version>4.3.20.RELEASE</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.testng</groupId>
-                <artifactId>testng</artifactId>
-                <version>6.14.3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -668,7 +670,6 @@
                         <mutators>
                             <mutator>ALL</mutator>
                         </mutators>
-                        <testPlugin>testng</testPlugin>
                         <!-- Use multple threads to speed things up. Extend
                         timeouts to prevent false positives as a result of
                         contention. -->
