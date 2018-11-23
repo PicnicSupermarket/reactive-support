@@ -965,6 +965,31 @@
             </build>
         </profile>
         <profile>
+            <!-- A counterpart to the `disallow-warnings` profile which
+            explicitly "tones down" plugins enabled by the `build-checks`
+            profile. Necessary for dealing with plugins that default to failing
+            the build upon encountering a violation. -->
+            <id>avoid-errors</id>
+            <activation>
+                <property>
+                    <name>verification.warn</name>
+                </property>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>com.coveo</groupId>
+                            <artifactId>fmt-maven-plugin</artifactId>
+                            <configuration>
+                                <skip>true</skip>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+        <profile>
             <!-- This profile is auto-activated when performing a release. -->
             <id>release</id>
             <build>
