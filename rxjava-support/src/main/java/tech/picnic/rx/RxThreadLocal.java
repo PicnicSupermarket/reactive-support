@@ -38,6 +38,22 @@ public final class RxThreadLocal<T> implements Function<Runnable, Runnable> {
   }
 
   /**
+   * Creates an {@link RxThreadLocal} which propagates a {@link ThreadLocal}'s value.
+   *
+   * @param <T> the type of thread-local object to be propagated
+   * @param threadLocal the thread-local value holder which will be consulted before a {@link
+   *     Runnable} is scheduled by an RxJava {@link Scheduler}; and which is updated accordingly
+   *     just before the {@link Runnable} is invoked
+   * @param configurer the operation that updates the relevant thread local context just before a
+   *    scheduled {@link Runnable} is invoked, based on the previously extracted context
+   * @return an {@link RxThreadLocal} backed by the given {@link ThreadLocal}; to be passed to
+   *     {@link PicnicRxPlugins#configureContextPropagation}.
+   */
+  public static <T> RxThreadLocal<T> from(ThreadLocal<T> threadLocal, Consumer<T> configurer) {
+    return from(threadLocal::get, configurer.andThen(threadLocal::set), threadLocal::set);
+  }
+
+  /**
    * Creates an {@link RxThreadLocal} with identical set and restore operations.
    *
    * @param <T> the type of the to-be propagated objects
