@@ -2,6 +2,7 @@ package tech.picnic.rx;
 
 import io.reactivex.Scheduler;
 import io.reactivex.functions.Function;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -15,9 +16,15 @@ import java.util.function.Supplier;
 public final class RxThreadLocal<T> implements Function<Runnable, Runnable> {
   private final Supplier<T> extractor;
   private final Consumer<T> configurer;
-  private final Consumer<T> restorer;
+  private final BiConsumer<T, T> restorer;
 
   private RxThreadLocal(Supplier<T> extractor, Consumer<T> configurer, Consumer<T> restorer) {
+    this.extractor = extractor;
+    this.configurer = configurer;
+    this.restorer = (original, caller) -> restorer.accept(original);
+  }
+
+  private RxThreadLocal(Supplier<T> extractor, Consumer<T> configurer, BiConsumer<T, T> restorer) {
     this.extractor = extractor;
     this.configurer = configurer;
     this.restorer = restorer;
@@ -74,6 +81,27 @@ public final class RxThreadLocal<T> implements Function<Runnable, Runnable> {
     return new RxThreadLocal<>(extractor, configurer, restorer);
   }
 
+  /**
+   * Creates an {@link RxThreadLocal}.
+   *
+   * @param <T> the type of the to-be propagated objects
+   * @param extractor the operation using which the context to be propagated and the context to be
+   *     replaced are extracted before a {@link Runnable} is scheduled by an RxJava {@link
+   *     Scheduler}
+   * @param configurer the operation that updates the relevant thread local context just before a
+   *     scheduled {@link Runnable} is invoked, based on the previously extracted context
+   * @param restorer the operation that restores the original thread local context following
+   *     completion of the scheduled {@link Runnable} provided with the original and caller thread
+   *     local contexts
+   * @return an {@link RxThreadLocal} that defines the propagation behaviour of a thread local
+   *     context by an RxJava {@link Scheduler}; to be passed to {@link
+   *     PicnicRxPlugins#configureContextPropagation}.
+   */
+  public static <T> RxThreadLocal<T> from(
+      Supplier<T> extractor, Consumer<T> configurer, BiConsumer<T, T> restorer) {
+    return new RxThreadLocal<>(extractor, configurer, restorer);
+  }
+
   @Override
   public Runnable apply(Runnable delegate) {
     T callerContext = extractor.get();
@@ -83,7 +111,7 @@ public final class RxThreadLocal<T> implements Function<Runnable, Runnable> {
         configurer.accept(callerContext);
         delegate.run();
       } finally {
-        restorer.accept(originalContext);
+        restorer.accept(originalContext, callerContext);
       }
     };
   }
