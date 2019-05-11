@@ -77,7 +77,7 @@
         <version.error-prone>2.3.3</version.error-prone>
         <version.error-prone-javac>9+181-r4173-1</version.error-prone-javac>
         <version.guava-beta-checker>1.0</version.guava-beta-checker>
-        <version.javadoc>3.0.1</version.javadoc>
+        <version.javadoc>3.1.0</version.javadoc>
         <version.jdk>1.8</version.jdk>
         <version.maven>3.5.3</version.maven>
         <version.nullaway>0.7.2</version.nullaway>
