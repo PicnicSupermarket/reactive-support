@@ -82,6 +82,7 @@
         <version.jdk>1.8</version.jdk>
         <version.maven>3.5.3</version.maven>
         <version.nullaway>0.7.2</version.nullaway>
+        <version.reactor>3.2.11.RELEASE</version.reactor>
         <version.surefire>2.22.0</version.surefire>
         <!-- Our build system (Travis CI) provides a monotonically increasing
         build number. When building locally, this number is obviously absent.
@@ -162,12 +163,12 @@
             <dependency>
                 <groupId>io.projectreactor</groupId>
                 <artifactId>reactor-core</artifactId>
-                <version>3.2.11.RELEASE</version>
+                <version>${version.reactor}</version>
             </dependency>
             <dependency>
                 <groupId>io.projectreactor</groupId>
                 <artifactId>reactor-test</artifactId>
-                <version>3.2.11.RELEASE</version>
+                <version>${version.reactor}</version>
             </dependency>
             <dependency>
                 <groupId>io.reactivex.rxjava2</groupId>
