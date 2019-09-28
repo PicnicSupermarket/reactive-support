@@ -138,6 +138,7 @@ final class RetryStrategyTest {
         .assertValue(11)
         .assertComplete();
   }
+
   /**
    * Returns a {@link Flowable} which yields either an error or an integer when subscribed to.
    *

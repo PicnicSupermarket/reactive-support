@@ -6,21 +6,21 @@
 [![SonarCloud Quality Gate][sonarcloud-badge-quality-gate]][sonarcloud-dashboard]
 [![SonarCloud Bugs][sonarcloud-badge-bugs]][sonarcloud-measure-reliability]
 [![SonarCloud Vulnerabilities][sonarcloud-badge-vulnerabilities]][sonarcloud-measure-security]
-[![SonarCloud Debt Ratio][sonarcloud-badge-debt-ratio]][sonarcloud-measure-maintainability]
-[![BCH compliance][bettercodehub-badge]][bettercodehub]
+[![SonarCloud Maintainability][sonarcloud-badge-maintainability]][sonarcloud-measure-maintainability]
+[![BCH compliance][bettercodehub-badge]][bettercodehub-results]
 
 A collection of Reactive Programming (RxJava and Reactor) utilities forged and
 implemented in the Picnic backend.
 
 ## How to Install
 
-Artifacts are hosted on [Maven's Central Repository][maven-central-search]:
+Artifacts are hosted on [Maven's Central Repository][maven-central-browse]:
 
 ### Gradle
 
 ```groovy
 dependencies {
-    compile 'tech.picnic.reactive-support:rxjava-support:0.0.1'
+    compile 'tech.picnic.reactive-support:rxjava-support:0.0.3'
 }
 ```
 
@@ -30,7 +30,7 @@ dependencies {
 <dependency>
     <groupId>tech.picnic.reactive-support</groupId>
     <artifactId>rxjava-support</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.3</version>
 </dependency>
 ```
 
@@ -141,23 +141,22 @@ not decrease. (There are exceptions to this rule, e.g. when more code is
 deleted than added.)
 
 [bettercodehub-badge]: https://bettercodehub.com/edge/badge/PicnicSupermarket/reactive-support?branch=master
-[bettercodehub]: https://bettercodehub.com
+[bettercodehub-results]: https://bettercodehub.com/results/PicnicSupermarket/reactive-support
 [coveralls-badge]: https://coveralls.io/repos/github/PicnicSupermarket/reactive-support/badge.svg?branch=master
 [coveralls-stats]: https://coveralls.io/github/PicnicSupermarket/reactive-support
 [flowable-retrywhen]: http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Flowable.html#retryWhen-io.reactivex.functions.Function-
 [maven-central-badge]: https://img.shields.io/maven-central/v/tech.picnic.reactive-support/reactive-support.svg
-[maven-central-browse]: https://repo1.maven.org/maven2/tech/picnic/reactive-support
-[maven-central-search]: https://search.maven.org
+[maven-central-browse]: https://repo1.maven.org/maven2/tech/picnic/reactive-support/
 [new-issue]: https://github.com/PicnicSupermarket/reactive-support/issues/new
 [new-pr]: https://github.com/PicnicSupermarket/reactive-support/compare
 [scheduler]: http://reactivex.io/RxJava/2.x/javadoc/io/reactivex/Scheduler.html
-[sonarcloud-badge-bugs]: https://sonarcloud.io/api/badges/measure?key=tech.picnic.reactive-support%3Areactive-support&metric=bugs
-[sonarcloud-badge-debt-ratio]: https://sonarcloud.io/api/badges/measure?key=tech.picnic.reactive-support%3Areactive-support&metric=sqale_debt_ratio
-[sonarcloud-badge-quality-gate]: https://sonarcloud.io/api/badges/gate?key=tech.picnic.reactive-support%3Areactive-support
-[sonarcloud-badge-vulnerabilities]: https://sonarcloud.io/api/badges/measure?key=tech.picnic.reactive-support%3Areactive-support&metric=vulnerabilities
+[sonarcloud-badge-bugs]: https://sonarcloud.io/api/project_badges/measure?project=tech.picnic.reactive-support%3Areactive-support&metric=bugs
+[sonarcloud-badge-maintainability]: https://sonarcloud.io/api/project_badges/measure?project=tech.picnic.reactive-support%3Areactive-support&metric=sqale_rating
+[sonarcloud-badge-quality-gate]: https://sonarcloud.io/api/project_badges/measure?project=tech.picnic.reactive-support%3Areactive-support&metric=alert_status
+[sonarcloud-badge-vulnerabilities]: https://sonarcloud.io/api/project_badges/measure?project=tech.picnic.reactive-support%3Areactive-support&metric=vulnerabilities
 [sonarcloud-dashboard]: https://sonarcloud.io/dashboard?id=tech.picnic.reactive-support%3Areactive-support
-[sonarcloud-measure-maintainability]: https://sonarcloud.io/component_measures?id=tech.picnic.reactive-support%3Areactive-support&metric=Coverage
 [sonarcloud-measure-reliability]: https://sonarcloud.io/component_measures?id=tech.picnic.reactive-support%3Areactive-support&metric=Reliability
 [sonarcloud-measure-security]: https://sonarcloud.io/component_measures?id=tech.picnic.reactive-support%3Areactive-support&metric=Security
+[sonarcloud-measure-maintainability]: https://sonarcloud.io/component_measures?id=tech.picnic.reactive-support%3Areactive-support&metric=Maintainability
 [travisci-badge]: https://travis-ci.org/PicnicSupermarket/reactive-support.svg?branch=master
 [travisci-builds]: https://travis-ci.org/PicnicSupermarket/reactive-support
