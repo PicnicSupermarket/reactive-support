@@ -12,21 +12,21 @@ import org.junit.jupiter.api.Test;
 
 final class RetryStrategyTest {
   @Test
-  void testOnlyIf() throws Exception {
+  void testOnlyIf() throws InterruptedException {
     errorSource(2)
         .retryWhen(
             RetryStrategy.onlyIf(
-                    e -> e instanceof RuntimeException && "Error #1".equals(e.getMessage()))
+                    e -> e instanceof IllegalStateException && "Error #1".equals(e.getMessage()))
                 .build())
         .test()
         .await()
-        .assertError(RuntimeException.class)
+        .assertError(IllegalStateException.class)
         .assertErrorMessage("Error #2");
     errorSource(1)
         .retryWhen(RetryStrategy.onlyIf(e -> e instanceof Error).build())
         .test()
         .await()
-        .assertError(RuntimeException.class)
+        .assertError(IllegalStateException.class)
         .assertErrorMessage("Error #1");
   }
 
@@ -120,16 +120,16 @@ final class RetryStrategyTest {
     scheduler.advanceTimeTo(29, MILLISECONDS);
     test.assertNotTerminated().assertNoValues();
     scheduler.advanceTimeTo(30, MILLISECONDS);
-    test.assertError(RuntimeException.class).assertErrorMessage("Error #3");
+    test.assertError(IllegalStateException.class).assertErrorMessage("Error #3");
   }
 
   @Test
-  void testTimes() throws Exception {
+  void testTimes() throws InterruptedException {
     errorSource(10)
         .retryWhen(RetryStrategy.always().times(5).build())
         .test()
         .await()
-        .assertError(RuntimeException.class)
+        .assertError(IllegalStateException.class)
         .assertErrorMessage("Error #6");
     errorSource(10)
         .retryWhen(RetryStrategy.always().times(10).build())
@@ -151,7 +151,7 @@ final class RetryStrategyTest {
         .map(
             i -> {
               if (i <= errors) {
-                throw new RuntimeException("Error #" + i);
+                throw new IllegalStateException("Error #" + i);
               }
               return i;
             });
