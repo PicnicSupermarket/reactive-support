@@ -30,6 +30,7 @@ import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -295,7 +296,7 @@ final class RxSpring4UtilTest {
           .to(publisherToSse(mediaType.map(MediaType::valueOf).orElse(null)));
     }
 
-    private static <T> Callable<T> defer(T value, T errorValue) {
+    private static <T> Callable<T> defer(@Nullable T value, T errorValue) {
       return () -> {
         if (errorValue.equals(value)) {
           throw new BadRequestException();
